@@ -84,15 +84,26 @@ public class LoginPanel extends JPanel implements Runnable {
             this.update(this.getGraphics());
 
             try {
-//                DBService dbService = new DBService(
-//                    urlField.getText(), loginField.getText(), passwordField.getPassword());
-
                 DataBase dataBase = new DataBase(urlField.getText(),
                     loginField.getText(), passwordField.getPassword());
 
-                MainMenuPanel mainMenuPanel
-                    = new MainMenuPanel(mainWindow, dataBase, this);
-                mainMenuPanel.run();
+                switch (dataBase.getCurSessionUserRole()) {
+                    case ADMIN -> {
+                        MainMenuPanel mainMenuPanel = new MainMenuPanel(
+                            mainWindow, dataBase, this);
+                        mainMenuPanel.run();
+                    }
+                    case READER -> {
+                        MainMenuPanel mainMenuPanel = new MainMenuPanel(
+                            mainWindow, dataBase, this);
+                        mainMenuPanel.run();
+                    }
+                    case SUPPLIER -> {
+                        MainMenuPanel mainMenuPanel = new MainMenuPanel(
+                            mainWindow, dataBase, this);
+                        mainMenuPanel.run();
+                    }
+                }
             } catch (SQLException ex) {
                 String error = ex.getMessage();
                 if (error.length() > PropertiesService.MAX_ERROR_MESSAGE_LENGTH) {
