@@ -1,96 +1,19 @@
 package dbApp.model.db;
 
-import dbApp.model.db.tables.Technologies;
+import dbApp.model.db.entities.Table;
+import dbApp.model.db.tables.clients.Clients;
+import dbApp.model.db.tables.technologies.Technologies;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DataBase {
-
-    public DbUserRole getCurSessionUserRole() {
-        return curSessionUserRole;
-    }
-
-    public enum DbUserRole {
-        ADMIN,
-        READER,
-        SUPPLIER
-    }
-
-    private final DbUserRole curSessionUserRole;
-
-    private final Technologies technologiesTable;
-
-    private final DBService dbService;
-
-    public DataBase(String dbURL, String username, char[] password) throws SQLException {
-        dbService = new DBService(dbURL, username, password);
-        technologiesTable = new Technologies(dbService);
-
-        curSessionUserRole = identifyUserRole(username);
-        setRoleRights();
-    }
-
-    private DbUserRole identifyUserRole(String username) throws SQLException {
-        String sql = """
-            SELECT rolname FROM pg_roles
-            WHERE oid = (SELECT roleid FROM pg_auth_members
-                         WHERE member = (SELECT usesysid FROM pg_user
-                                         WHERE usename = ?))""";
-
-        PreparedStatement preparedStatement = dbService.getDbConnection().prepareStatement(sql);
-        preparedStatement.setString(1, username);
-
-        ResultSet resultSet = preparedStatement.executeQuery();
-
-        resultSet.next();
-        switch (resultSet.getString("rolname")) {
-            case "admin" -> {
-                return DbUserRole.ADMIN;
-            }
-            case "supplier" -> {
-                return DbUserRole.SUPPLIER;
-            }
-            default -> {
-                return DbUserRole.READER;
-            }
-        }
-    }
-
-    private void setRoleRights() throws SQLException {
-        String sql = switch (curSessionUserRole) {
-            case ADMIN -> "SET ROLE \"admin\"";
-            case READER -> "SET ROLE \"reader\"";
-            case SUPPLIER -> "SET ROLE \"supplier\"";
-        };
-
-        Statement statement = dbService.getDbConnection().createStatement();
-        statement.execute(sql);
-        statement.close();
-    }
-
-    public DBService getDbService() {
-        return dbService;
-    }
-
-    // Создание всех таблиц и ключей между ними
-    public void createAndLinkTables() throws SQLException {
-        technologiesTable.createTable();
-
-//// Создание внешних ключей
-//        shareRates.createForeignKeys();
-    }
-
-    public Technologies getTechnologiesTable() {
-        return technologiesTable;
-    }
-
-    public void close() {
-        dbService.close();
-    }
 
     public static class DBService {
 
@@ -128,5 +51,99 @@ public class DataBase {
                 System.err.println(e.getMessage());
             }
         }
+    }
+
+    public enum DbUserRole {
+        ADMIN,
+        CLIENT,
+        SUPPLIER
+    }
+
+    private final DbUserRole curSessionUserRole;
+
+    private final Technologies technologiesTable;
+    private final Clients clientsTable;
+
+    private final DBService dbService;
+
+    public DataBase(String dbURL, String username, char[] password) throws SQLException {
+        dbService = new DBService(dbURL, username, password);
+
+        technologiesTable = new Technologies(dbService);
+        clientsTable = new Clients(dbService);
+
+        curSessionUserRole = identifyUserRole(username);
+        setRoleRights();
+    }
+
+    private DbUserRole identifyUserRole(String username) throws SQLException {
+        String sql = """
+            SELECT rolname FROM pg_roles
+            WHERE oid = (SELECT roleid FROM pg_auth_members
+                         WHERE member = (SELECT usesysid FROM pg_user
+                                         WHERE usename = ?))""";
+
+        PreparedStatement preparedStatement = dbService.getDbConnection().prepareStatement(sql);
+        preparedStatement.setString(1, username);
+
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        resultSet.next();
+        switch (resultSet.getString("rolname")) {
+            case "administrators" -> {
+                return DbUserRole.ADMIN;
+            }
+            case "suppliers" -> {
+                return DbUserRole.SUPPLIER;
+            }
+            case "clients" -> {
+                return DbUserRole.CLIENT;
+            }
+            default -> throw new RuntimeException("Неизвестная роль базы данных");
+        }
+    }
+
+    private void setRoleRights() throws SQLException {
+        String sql = switch (curSessionUserRole) {
+            case ADMIN -> "SET ROLE administrators";
+            case CLIENT -> "SET ROLE clients";
+            case SUPPLIER -> "SET ROLE suppliers";
+        };
+
+        Statement statement = dbService.getDbConnection().createStatement();
+        statement.execute(sql);
+        statement.close();
+    }
+
+    public DbUserRole getCurSessionUserRole() {
+        return curSessionUserRole;
+    }
+
+    public DBService getDbService() {
+        return dbService;
+    }
+
+    // Создание всех таблиц и ключей между ними
+    public void createAndLinkTables() throws SQLException {
+        technologiesTable.createTable();
+
+//// Создание внешних ключей
+//        shareRates.createForeignKeys();
+    }
+
+    public Technologies getTechnologiesTable() {
+        return technologiesTable;
+    }
+
+    public List<Table> getTables() {
+        ArrayList<Table> tables = new ArrayList<>(11);
+        tables.add(technologiesTable);
+        tables.add(clientsTable);
+
+        return tables;
+    }
+
+    public void close() {
+        dbService.close();
     }
 }

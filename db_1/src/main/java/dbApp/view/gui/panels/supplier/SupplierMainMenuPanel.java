@@ -1,8 +1,9 @@
-package dbApp.view.gui.panels;
+package dbApp.view.gui.panels.supplier;
 
 import dbApp.model.db.DataBase;
 import dbApp.view.gui.MainWindow;
 import dbApp.view.gui.ViewConstants;
+import dbApp.view.gui.panels.LoginPanel;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -11,13 +12,13 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class MainMenuPanel extends JPanel implements Runnable {
+public class SupplierMainMenuPanel extends JPanel implements Runnable {
 
     private final MainWindow mainWindow;
     private final DataBase dataBase;
     private final LoginPanel loginPanel;
 
-    public MainMenuPanel(MainWindow mainWindow, DataBase dataBase, LoginPanel loginPanel) {
+    public SupplierMainMenuPanel(MainWindow mainWindow, DataBase dataBase, LoginPanel loginPanel) {
         this.mainWindow = mainWindow;
         this.dataBase = dataBase;
         this.loginPanel = loginPanel;

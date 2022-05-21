@@ -4,6 +4,9 @@ import dbApp.model.db.DataBase;
 import dbApp.util.PropertiesService;
 import dbApp.view.gui.MainWindow;
 import dbApp.view.gui.ViewConstants;
+import dbApp.view.gui.panels.admin.AdminMainMenuPanel;
+import dbApp.view.gui.panels.client.ClientMainMenuPanel;
+import dbApp.view.gui.panels.supplier.SupplierMainMenuPanel;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -89,19 +92,19 @@ public class LoginPanel extends JPanel implements Runnable {
 
                 switch (dataBase.getCurSessionUserRole()) {
                     case ADMIN -> {
-                        MainMenuPanel mainMenuPanel = new MainMenuPanel(
+                        AdminMainMenuPanel adminMainMenuPanel = new AdminMainMenuPanel(
                             mainWindow, dataBase, this);
-                        mainMenuPanel.run();
+                        adminMainMenuPanel.run();
                     }
-                    case READER -> {
-                        MainMenuPanel mainMenuPanel = new MainMenuPanel(
+                    case CLIENT -> {
+                        ClientMainMenuPanel clientMainMenuPanel = new ClientMainMenuPanel(
                             mainWindow, dataBase, this);
-                        mainMenuPanel.run();
+                        clientMainMenuPanel.run();
                     }
                     case SUPPLIER -> {
-                        MainMenuPanel mainMenuPanel = new MainMenuPanel(
+                        SupplierMainMenuPanel supplierMainMenuPanel = new SupplierMainMenuPanel(
                             mainWindow, dataBase, this);
-                        mainMenuPanel.run();
+                        supplierMainMenuPanel.run();
                     }
                 }
             } catch (SQLException ex) {

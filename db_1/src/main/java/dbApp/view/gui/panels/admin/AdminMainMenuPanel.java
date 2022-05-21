@@ -2,12 +2,11 @@ package dbApp.view.gui.panels.admin;
 
 import dbApp.model.db.DataBase;
 import dbApp.view.gui.MainWindow;
-import dbApp.view.gui.ViewConstants;
+import dbApp.view.gui.panels.BorderPanel;
 import dbApp.view.gui.panels.LoginPanel;
-import java.awt.Color;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -23,44 +22,55 @@ public class AdminMainMenuPanel extends JPanel implements Runnable {
         this.dataBase = dataBase;
         this.loginPanel = loginPanel;
 
-        this.setLayout(new GridBagLayout());
+        this.setLayout(new BorderLayout());
     }
 
     private void init() {
-        JPanel tablesBlock = new JPanel(new GridBagLayout());
+        BorderPanel northBorder = new BorderPanel(
+            new FlowLayout(FlowLayout.CENTER, 100, 10));
+        initNorthBorder(northBorder);
+        this.add(northBorder, BorderLayout.NORTH);
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.insets = new Insets(
-            ViewConstants.INSETS,
-            ViewConstants.INSETS,
-            ViewConstants.INSETS,
-            ViewConstants.INSETS);
+        BorderPanel southBorder = new BorderPanel(
+            new FlowLayout(FlowLayout.RIGHT, 20, 10));
+        initSouthBorder(southBorder);
+        this.add(southBorder, BorderLayout.SOUTH);
 
-        JLabel infoBlock = new JLabel("");
-        tablesBlock.add(infoBlock, gbc);
-        this.add(tablesBlock, gbc);
+        TablesListPanel tablesListPanel = new TablesListPanel(dataBase.getTables());
+//        initTableListPanel(tablesListPanel);
+        this.add(tablesListPanel, BorderLayout.CENTER);
+    }
 
-        gbc.gridy++;
-        JButton readRowCountButton = new JButton("Узнать количество строк в таблице");
-        this.add(readRowCountButton, gbc);
+    private void initNorthBorder(BorderPanel northBorder) {
+        JLabel roleLabel = new JLabel("Ваша роль: Администратор");
+        roleLabel.setHorizontalAlignment(JLabel.LEFT);
+        roleLabel.setFont(new Font("Verdana", Font.PLAIN, 16));
+        northBorder.add(roleLabel);
 
-        gbc.gridy++;
-        JButton exitButton = new JButton("Выйти");
-        this.add(exitButton, gbc);
+        JLabel label = new JLabel("Система управления аптекой");
+//        label.setFont(new Font("Verdana", Font.PLAIN, 12));
+        northBorder.add(label);
+    }
 
-        readRowCountButton.addActionListener(e -> {
-            infoBlock.setForeground(Color.RED);
-            infoBlock.setText("Текущее количество записей в таблице: "
-                + dataBase.getTechnologiesTable().readAll().size());
+    private void initSouthBorder(BorderPanel southBorder) {
+        JButton reportsButton = new JButton("Отчеты по работе аптеки");
+        reportsButton.addActionListener(e -> {
+
         });
+        southBorder.add(reportsButton);
 
+
+        JButton exitButton = new JButton("Выйти");
         exitButton.addActionListener(e -> {
             dataBase.close();
             loginPanel.run();
         });
+        southBorder.add(exitButton);
     }
+
+//    private void initTableListPanel(TablesListPanel tablesListPanel) {
+//
+//    }
 
     @Override
     public void run() {

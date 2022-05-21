@@ -1,9 +1,10 @@
 package dbApp.model.db.entities;
 
-public abstract class TableRow {
+import java.util.List;
 
-    public TableRow() {
+public interface TableRow {
 
-    }
+    String getColumnValue(String columnName);
 
+    PrimaryKey getPrimaryKey();
 }
