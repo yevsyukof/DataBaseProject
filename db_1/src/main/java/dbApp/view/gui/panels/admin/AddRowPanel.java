@@ -2,6 +2,7 @@ package dbApp.view.gui.panels.admin;
 
 import dbApp.model.db.entities.AbstractTable;
 import dbApp.view.gui.SideWindow;
+import java.sql.SQLException;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -61,27 +62,19 @@ public class AddRowPanel extends JPanel {
             addRowWindow.revalidate();
             this.update(getGraphics());
 
-            Row row = new Row();
-            int i = 0;
-            for (Field field : table.getFields()) {
-                if (field.getName().equals("id")) {
-                    continue;
-                }
-                String fieldText = textFields.get(i).getText();
-                if (fieldText.isEmpty()) {
-                    i++;
-                    continue;
-                }
-                row.add(new Value(field, fieldText));
-                i++;
+            ArrayList<String> fieldsValues = new ArrayList<>();
+            for (JTextField textField : textFields) {
+                fieldsValues.add(textField.getText());
             }
-            String error = sqlExecutor.insertValue(table, row);
-            if (error.isEmpty()) {
+
+            try {
+                table.addRow(fieldsValues);
                 infoLabel.setText("Данные добавлены");
-            }
-            else {
+
+                viewTablePanel.run();
+            } catch (SQLException ex) {
                 infoLabel.setForeground(Color.RED);
-                infoLabel.setText(error);
+                infoLabel.setText(ex.getMessage());
             }
         });
         this.add(addButton, gbc);
@@ -93,11 +86,11 @@ public class AddRowPanel extends JPanel {
     }
 
     public void run() {
-        removeAll();
+        this.removeAll();
         init();
         addRowWindow.getContentPane().removeAll();
         addRowWindow.getContentPane().add(this);
-        update(getGraphics());
+        this.update(getGraphics());
         addRowWindow.revalidate();
     }
 }

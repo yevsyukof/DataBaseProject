@@ -2,16 +2,23 @@ package dbApp.model.db.tables.technologies;
 
 import dbApp.model.db.entities.AbstractPrimaryKey;
 import dbApp.model.db.entities.AbstractTableRow;
+import dbApp.model.db.errors.InvalidRowFormatException;
+import java.util.List;
+import lombok.Getter;
 
 public class TechnologiesRow extends AbstractTableRow {
 
-    private final int id;
-    private final int drugId;
-    private final int makeDuration;
+    @Getter
+    private final Integer id;
+    @Getter
+    private final Integer drugId;
+    @Getter
+    private final Integer makeDuration;
+    @Getter
     private final String technologyDesc;
 
-    public TechnologiesRow(int id, int drugId,
-        int makeDuration, String technologyDesc) {
+    public TechnologiesRow(Integer id, Integer drugId,
+            Integer makeDuration, String technologyDesc) {
         this.id = id;
         this.drugId = drugId;
         this.makeDuration = makeDuration;
@@ -21,22 +28,6 @@ public class TechnologiesRow extends AbstractTableRow {
         fields.add(drugId);
         fields.add(makeDuration);
         fields.add(technologyDesc);
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public int getDrugId() {
-        return drugId;
-    }
-
-    public int getMakeDuration() {
-        return makeDuration;
-    }
-
-    public String getTechnologyDesc() {
-        return technologyDesc;
     }
 
     @Override

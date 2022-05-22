@@ -4,6 +4,7 @@ import dbApp.model.db.DataBase.DBService;
 import dbApp.model.db.entities.AbstractPrimaryKey;
 import dbApp.model.db.entities.AbstractTableRow;
 import dbApp.model.db.entities.AbstractTable;
+import dbApp.model.db.errors.InvalidRowFormatException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,40 +31,41 @@ public class Technologies extends AbstractTable {
         translatedColumnsNames.add("ID Лекарства");
         translatedColumnsNames.add("Время изготовления");
         translatedColumnsNames.add("Описание технологии");
-
-        columnsIndexes.put("id", 1);
-        columnsIndexes.put("drug_id", 2);
-        columnsIndexes.put("make_duration", 3);
-        columnsIndexes.put("technology_desc", 4);
-
-        columnsIndexes.put("ID Лекарства", 2);
-        columnsIndexes.put("Время изготовления", 3);
-        columnsIndexes.put("Описание технологии", 4);
     }
 
     @Override
-    public void createTable() { }
+    public void addRow(List<String> fieldsValues) throws SQLException {
+        if (fieldsValues.size() != 3) {
+            StringBuilder sb = new StringBuilder();
+            for (String str : fieldsValues) {
+                sb.append(str);
+                sb.append(", ");
+            }
 
-    @Override
-    public void dropTable() { }
-
-    @Override
-    public void addRow(AbstractTableRow newRow) throws SQLException {
-        TechnologiesRow newTechnologiesRow = (TechnologiesRow) newRow;
+            throw new InvalidRowFormatException("""
+                Попытка создать строку в таблице "Технологии" в неправильном формате
+                Строка: """ + sb);
+        }
 
         String sql = """
-            INSERT INTO drug_manufacturers
+            INSERT INTO technologies
                 (drug_id, make_duration, technology_desc)
             VALUES
                 (?, ?, ?)
                 """;
 
         PreparedStatement preparedStatement = dbService.getDbConnection().prepareStatement(sql);
-        preparedStatement.setInt(1, newTechnologiesRow.getDrugId());
-        preparedStatement.setInt(2, newTechnologiesRow.getMakeDuration());
-        preparedStatement.setString(3, newTechnologiesRow.getTechnologyDesc());
+
+        try {
+            preparedStatement.setInt(1, Integer.parseInt(fieldsValues.get(0)));
+            preparedStatement.setInt(2, Integer.parseInt(fieldsValues.get(1)));
+            preparedStatement.setString(3, fieldsValues.get(2));
+        } catch (IllegalArgumentException e) {
+            throw new SQLException(e.getMessage());
+        }
 
         preparedStatement.execute();
+        preparedStatement.close();
     }
 
     @Override
@@ -77,7 +79,6 @@ public class Technologies extends AbstractTable {
             ((TechnologiesRowPrimaryKey)primaryKeyValue).getId());
 
         preparedStatement.execute();
-
         preparedStatement.close();
     }
 

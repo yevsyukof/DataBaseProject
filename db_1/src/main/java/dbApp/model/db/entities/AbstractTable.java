@@ -15,7 +15,8 @@ public abstract class AbstractTable {
     protected final Set<String> primaryKeyComponentsNames;
     protected final Set<String> columnsNames;
     protected final Set<String> translatedColumnsNames;
-    protected final Map<String, Integer> columnsIndexes;
+
+//    protected final Map<String, Integer> columnsIndexes;
 
     protected final DBService dbService;
 
@@ -28,17 +29,15 @@ public abstract class AbstractTable {
         primaryKeyComponentsNames = new LinkedHashSet<>();
         columnsNames = new LinkedHashSet<>();
         translatedColumnsNames = new LinkedHashSet<>();
-        columnsIndexes = new HashMap<>();
+
+//        columnsIndexes = new HashMap<>();
+
         loadColumns();
     }
 
     protected abstract void loadColumns();
 
-    public abstract void createTable() throws SQLException;
-
-    public abstract void dropTable() throws SQLException;
-
-    public abstract void addRow(AbstractTableRow newRow) throws SQLException;
+    public abstract void addRow(List<String> fieldsValues) throws SQLException;
 
     public abstract void deleteRow(AbstractPrimaryKey primaryKeyValue) throws SQLException;
 
@@ -56,7 +55,8 @@ public abstract class AbstractTable {
     }
 
     public int getColumIndex(String columnName) {
-        return columnsIndexes.get(columnName);
+//        return columnsIndexes.get(columnName);
+        return -1; // TODO
     }
 
     public String getName() {

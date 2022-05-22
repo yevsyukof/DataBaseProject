@@ -58,8 +58,7 @@ public class ViewTablePanel extends JPanel {
 
         JButton addRowButton = new JButton("Добавить новый ряд");
         addRowButton.addActionListener(e -> {
-            AddRowPanel addRowPanel = new AddRowPanel(
-                new SideWindow("Добавление строки"), this,table);
+            AddRowPanel addRowPanel = new AddRowPanel(tableWindow, this, table);
             addRowPanel.run();
         });
         editButtonsPanel.add(addRowButton, gbcButtons);
@@ -133,6 +132,7 @@ public class ViewTablePanel extends JPanel {
     }
 
     public void run() {
+        this.removeAll();
         init();
         tableWindow.getContentPane().removeAll();
         tableWindow.getContentPane().add(this);

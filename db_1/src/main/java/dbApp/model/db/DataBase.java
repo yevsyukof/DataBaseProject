@@ -2,6 +2,12 @@ package dbApp.model.db;
 
 import dbApp.model.db.entities.AbstractTable;
 import dbApp.model.db.tables.clients.Clients;
+import dbApp.model.db.tables.drug_manufacturers.DrugManufacturers;
+import dbApp.model.db.tables.drugs.Drugs;
+import dbApp.model.db.tables.drugs_use_statistics.DrugsUseStatistics;
+import dbApp.model.db.tables.orders.Orders;
+import dbApp.model.db.tables.purchase_requests.PurchaseRequests;
+import dbApp.model.db.tables.release_forms.ReleaseForms;
 import dbApp.model.db.tables.technologies.Technologies;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -62,6 +68,12 @@ public class DataBase {
 
     private final Technologies technologiesTable;
     private final Clients clientsTable;
+    private final DrugManufacturers drugManufacturers;
+    private final Drugs drugs;
+    private final DrugsUseStatistics drugsUseStatistics;
+    private final Orders orders;
+    private final PurchaseRequests purchaseRequests;
+    private final ReleaseForms releaseForms;
 
     private final DBService dbService;
 
@@ -70,6 +82,12 @@ public class DataBase {
 
         technologiesTable = new Technologies(dbService);
         clientsTable = new Clients(dbService);
+        drugManufacturers = new DrugManufacturers(dbService);
+        drugs = new Drugs(dbService);
+        drugsUseStatistics = new DrugsUseStatistics(dbService);
+        orders = new Orders(dbService);
+        purchaseRequests = new PurchaseRequests(dbService);
+        releaseForms = new ReleaseForms(dbService);
 
         curSessionUserRole = identifyUserRole(username);
         setRoleRights();
@@ -122,22 +140,16 @@ public class DataBase {
         return dbService;
     }
 
-    // Создание всех таблиц и ключей между ними
-    public void createAndLinkTables() throws SQLException {
-        technologiesTable.createTable();
-
-//// Создание внешних ключей
-//        shareRates.createForeignKeys();
-    }
-
-    public Technologies getTechnologiesTable() {
-        return technologiesTable;
-    }
-
     public List<AbstractTable> getTables() {
-        ArrayList<AbstractTable> tables = new ArrayList<>(11);
+        ArrayList<AbstractTable> tables = new ArrayList<>();
         tables.add(technologiesTable);
         tables.add(clientsTable);
+        tables.add(drugManufacturers);
+        tables.add(drugs);
+        tables.add(drugsUseStatistics);
+        tables.add(orders);
+        tables.add(purchaseRequests);
+        tables.add(releaseForms);
 
         return tables;
     }

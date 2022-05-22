@@ -30,7 +30,7 @@ public class TableInfoPanel extends JPanel {
 
     private void init(AbstractTable table) {
         JLabel tableName = new JLabel("Название таблицы:    " + table.getTranslatedName());
-        tableName.setFont(new Font("Verdana", Font.PLAIN, 14));
+//        tableName.setFont(new Font("Verdana", Font.PLAIN, 14));
         this.add(tableName, BorderLayout.NORTH);
 
         JLabel columnsNamesListLabel = new JLabel("Столбцы: ");
