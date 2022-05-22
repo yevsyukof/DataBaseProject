@@ -3,7 +3,6 @@ package dbApp.model.db;
 import dbApp.model.db.entities.Table;
 import dbApp.model.db.tables.clients.Clients;
 import dbApp.model.db.tables.technologies.Technologies;
-import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;

@@ -1,10 +1,13 @@
 package dbApp.model.db.entities;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
-public interface TableRow {
+public abstract class TableRow {
 
-    String getColumnValue(String columnName);
+    protected final ArrayList<Object> fields = new ArrayList<>();
 
-    PrimaryKey getPrimaryKey();
+    public Object getField(int columnIndex) {
+        return fields.get(columnIndex);
+    }
 }

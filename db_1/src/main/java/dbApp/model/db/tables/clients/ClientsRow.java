@@ -1,5 +1,7 @@
 package dbApp.model.db.tables.clients;
 
-public class ClientsRow {
+import dbApp.model.db.entities.TableRow;
+
+public class ClientsRow extends TableRow {
 
 }

@@ -1,24 +1,67 @@
 package dbApp.model.db.entities;
 
+import dbApp.model.db.DataBase.DBService;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-public interface Table {
+// Сервисный родительский класс, куда вынесена реализация общих действий для всех таблиц
+public abstract class Table {
 
-    void createTable() throws SQLException;
+    protected final Set<String> columnsNames;
+    protected final Set<String> translatedColumnsNames;
+    protected final Map<String, Integer> columnsIndexes;
 
-    void dropTable() throws SQLException;
+    protected final DBService dbService;
 
-    void addRow(TableRow newRow) throws SQLException;
+    protected final String tableName;
 
-    void deleteRow(PrimaryKey primaryKey) throws SQLException;
+    public Table(String tableName, DBService dbService) throws SQLException {
+        this.tableName = tableName;
+        this.dbService = dbService;
 
-    void updateRow(PrimaryKey primaryKey, TableRow newRowValue) throws SQLException;
+        columnsNames = new LinkedHashSet<>();
+        translatedColumnsNames = new LinkedHashSet<>();
+        columnsIndexes = new HashMap<>();
+        loadColumns();
+    }
 
-    List<TableRow> readAll() throws SQLException;
+    protected void loadColumns() {  }
 
-    List<String> getColumnsNames();
+    public void createTable() throws SQLException {  }
 
-    String getName();
+    public void dropTable() throws SQLException {  }
+
+    public void addRow(TableRow newRow) throws SQLException {  }
+
+    public void deleteRow(PrimaryKey primaryKey) throws SQLException {  }
+
+    public void updateRow(PrimaryKey primaryKey, TableRow updatedRow) throws SQLException {  }
+
+    public List<TableRow> readAll() throws SQLException {
+        return null;
+    }
+
+    public List<String> getColumnsNames() {
+        return columnsNames.stream().toList();
+    }
+
+    public List<String> getTranslatedColumnsNames() {
+        return translatedColumnsNames.stream().toList();
+    }
+
+    public int getColumIndex(String columnName) {
+        return columnsIndexes.get(columnName);
+    }
+
+    public String getName() {
+        return tableName;
+    }
+
+    public String getTranslatedName() {
+        return null;
+    }
 }

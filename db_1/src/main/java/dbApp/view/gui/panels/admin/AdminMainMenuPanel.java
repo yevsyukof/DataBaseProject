@@ -5,6 +5,8 @@ import dbApp.view.gui.MainWindow;
 import dbApp.view.gui.panels.BorderPanel;
 import dbApp.view.gui.panels.LoginPanel;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import javax.swing.JButton;
@@ -27,7 +29,8 @@ public class AdminMainMenuPanel extends JPanel implements Runnable {
 
     private void init() {
         BorderPanel northBorder = new BorderPanel(
-            new FlowLayout(FlowLayout.CENTER, 100, 10));
+            new FlowLayout(FlowLayout.CENTER, 100, 10),
+            new Dimension(100, 50));
         initNorthBorder(northBorder);
         this.add(northBorder, BorderLayout.NORTH);
 
@@ -37,7 +40,6 @@ public class AdminMainMenuPanel extends JPanel implements Runnable {
         this.add(southBorder, BorderLayout.SOUTH);
 
         TablesListPanel tablesListPanel = new TablesListPanel(dataBase.getTables());
-//        initTableListPanel(tablesListPanel);
         this.add(tablesListPanel, BorderLayout.CENTER);
     }
 
@@ -48,7 +50,7 @@ public class AdminMainMenuPanel extends JPanel implements Runnable {
         northBorder.add(roleLabel);
 
         JLabel label = new JLabel("Система управления аптекой");
-//        label.setFont(new Font("Verdana", Font.PLAIN, 12));
+        label.setFont(new Font("Verdana", Font.PLAIN, 12));
         northBorder.add(label);
     }
 
@@ -67,10 +69,6 @@ public class AdminMainMenuPanel extends JPanel implements Runnable {
         });
         southBorder.add(exitButton);
     }
-
-//    private void initTableListPanel(TablesListPanel tablesListPanel) {
-//
-//    }
 
     @Override
     public void run() {

@@ -3,10 +3,11 @@ package dbApp.view.gui.panels.admin;
 import dbApp.model.db.entities.Table;
 import dbApp.view.gui.panels.SideWindow;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -15,37 +16,37 @@ import javax.swing.JTable;
 
 public class ViewTablePanel extends JPanel {
 
-    private final SideWindow viewTableWindow;
-    private final AdminMainMenuPanel adminMainMenuPanel;
+    private static final int MIN_TABLE_WIDTH = 450;
+    private static final int MIN_TABLE_HEIGHT = 220;
+
+    private final SideWindow tableWindow;
 
     private final Table table;
-    private ResultSet resultSet;
-    private JTable jTable;
-    private JScrollPane jScrollPane;
+
+    private JTable tableModel;
+    private JScrollPane tableScrollPane;
     private JLabel infoLabel;
 
-    public ViewTablePanel(SideWindow viewTableWindow, AdminMainMenuPanel adminMainMenuPanel,
-                                Table table) {
-        this.viewTableWindow = viewTableWindow;
-        this.adminMainMenuPanel = adminMainMenuPanel;
+    public ViewTablePanel(SideWindow tableWindow, Table table) {
+        this.tableWindow = tableWindow;
         this.table = table;
     }
 
     private void init() {
-        setLayout(new GridBagLayout());
+        this.setLayout(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.insets = new Insets(8, 8, 8, 8);
 
-        add(new JLabel(table.getName()), gbc);
+        this.add(new JLabel(table.getTranslatedName()), gbc);
         gbc.gridy++;
 
-        jTable = new JTable();
-        jTable.setEnabled(false);
-        jScrollPane = new JScrollPane(jTable);
-        add(jScrollPane, gbc);
+        tableModel = new JTable();
+        tableModel.setEnabled(false);
+        tableScrollPane = new JScrollPane(tableModel);
+        this.add(tableScrollPane, gbc);
 
         JPanel editButtons = new JPanel(new GridBagLayout());
         GridBagConstraints gbcButtons = new GridBagConstraints();
@@ -64,8 +65,8 @@ public class ViewTablePanel extends JPanel {
         gbcButtons.gridx++;
         JButton deleteRowButton = new JButton("Удалить выделенный ряд");
 
-//        deleteRowButton.addActionListener(e -> {
-//            if (jTable.getSelectedRow() == -1) {
+//        deleteRowButton.addActionListener(e -> {      ///jTable == tableModel
+//            if (tableModel.getSelectedRow() == -1) {
 //                updateInfoLabel("Ряд не выбран", true);
 //            }
 //            else {
@@ -88,36 +89,35 @@ public class ViewTablePanel extends JPanel {
 
 
         gbc.gridy++;
-        add(editButtons, gbc);
+        this.add(editButtons, gbc);
 
         gbc.gridy++;
         infoLabel = new JLabel("\n");
-        add(infoLabel, gbc);
-
-//        gbc.gridy++;
-//        JButton closeButton = new JButton("Вернуться к выбору таблицы");
-//        add(closeButton, gbc);
-//        closeButton.addActionListener(e -> {
-////            closeViewPanelWindow();
-//        });
+        this.add(infoLabel, gbc);
 
         try {
             infoLabel.setForeground(Color.BLACK);
             infoLabel.setText("Получение данных таблицы...");
-            viewTableWindow.revalidate();
-//            resultSet = sqlExecutor.getAllTableValues(table);
-//            jTable = new JTable(new CustomTableModel(resultSet, table, sqlExecutor, this));
-//            if (sqlExecutor.getLogin().equals(SecretProperties.DB_BUYER_LOGIN) ||
-//                sqlExecutor.getLogin().equals(SecretProperties.DB_MANAGER_LOGIN) &&
-//                    table.getAccess() != 1) {
-//                jTable.setEnabled(false);
-//            }
-            jTable.setAutoCreateRowSorter(true);
-            jScrollPane.getViewport().removeAll();
-            jScrollPane.getViewport().add(jTable);
-            infoLabel.setText("\n");
-        } catch (RuntimeException e) {
+            tableWindow.revalidate();
 
+            tableModel = new JTable(new AdminViewTableModel(this, table));
+            tableModel.setEnabled(true);
+
+            tableModel.setAutoCreateRowSorter(true);
+            tableScrollPane.getViewport().removeAll();
+            tableScrollPane.getViewport().add(tableModel);
+
+            tableScrollPane.setMinimumSize(new Dimension(MIN_TABLE_WIDTH, MIN_TABLE_HEIGHT));
+            tableScrollPane.setPreferredSize(new Dimension(
+                MIN_TABLE_WIDTH + 400,
+                MIN_TABLE_HEIGHT + 300));
+
+            infoLabel.setText("\n");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (NullPointerException ex) {
+            System.err.println("нул поинтер ексепшен");
+            ex.printStackTrace();
         }
     }
 
@@ -130,21 +130,16 @@ public class ViewTablePanel extends JPanel {
         }
         infoLabel.setText(labelText);
         if (!isError) {
-            viewTableWindow.revalidate();
+            tableWindow.revalidate();
             update(getGraphics());
         }
     }
 
-    public void start() {
+    public void run() {
         init();
-        viewTableWindow.getContentPane().removeAll();
-        viewTableWindow.getContentPane().add(this);
+        tableWindow.getContentPane().removeAll();
+        tableWindow.getContentPane().add(this);
         this.update(getGraphics());
-        viewTableWindow.revalidate();
+        tableWindow.revalidate();
     }
-
-//    private void closeViewPanelWindow() {
-//        viewTableWindow.
-//        chooseTablePanel.start();
-//    }
 }

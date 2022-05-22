@@ -1,6 +1,7 @@
 package dbApp.view.gui.panels.admin;
 
 import dbApp.model.db.entities.Table;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.util.List;
 import javax.swing.JPanel;
@@ -17,5 +18,7 @@ public class TablesListPanel extends JPanel {
             TableInfoPanel tableInfoPanel = new TableInfoPanel(table);
             this.add(tableInfoPanel);
         }
+
+        this.setBackground(Color.LIGHT_GRAY);
     }
 }

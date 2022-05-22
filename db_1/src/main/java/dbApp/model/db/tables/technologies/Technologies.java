@@ -3,21 +3,40 @@ package dbApp.model.db.tables.technologies;
 import dbApp.model.db.DataBase.DBService;
 import dbApp.model.db.entities.PrimaryKey;
 import dbApp.model.db.entities.TableRow;
-import dbApp.model.db.tables.AbstractTable;
 import dbApp.model.db.entities.Table;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-public class Technologies extends AbstractTable implements Table {
+public class Technologies extends Table {
 
     public Technologies(DBService dbService) throws SQLException {
         super("technologies", dbService);
+    }
+
+    @Override
+    protected void loadColumns() {
+        columnsNames.add("id");
+        columnsNames.add("drug_id");
+        columnsNames.add("make_duration");
+        columnsNames.add("technology_desc");
+
+        translatedColumnsNames.add("id");
+        translatedColumnsNames.add("ID Лекарства");
+        translatedColumnsNames.add("Время изготовления");
+        translatedColumnsNames.add("Описание технологии");
+
+        columnsIndexes.put("id", 1);
+        columnsIndexes.put("drug_id", 2);
+        columnsIndexes.put("make_duration", 3);
+        columnsIndexes.put("technology_desc", 4);
+
+        columnsIndexes.put("ID Лекарства", 2);
+        columnsIndexes.put("Время изготовления", 3);
+        columnsIndexes.put("Описание технологии", 4);
     }
 
     @Override
@@ -50,41 +69,37 @@ public class Technologies extends AbstractTable implements Table {
     }
 
     @Override
-    public void updateRow(PrimaryKey primaryKey, TableRow newRowValue) {
+    public void updateRow(PrimaryKey primaryKey, TableRow updatedRow) {
 
     }
 
     @Override
     public List<TableRow> readAll() {
-        String query = "SELECT * FROM Technologies";
+        String sql = "SELECT * FROM Technologies";
 
         try (Statement statement = dbService.getDbConnection().createStatement()) {
-            ResultSet resultSet = statement.executeQuery(query);
-            ArrayList<TableRow> allRows = new ArrayList<>();
+            ResultSet resultSet = statement.executeQuery(sql);
+            ArrayList<TableRow> allTableRows = new ArrayList<>();
 
             while (resultSet.next()) {
-                allRows.add(
+                allTableRows.add(
                     new TechnologiesRow(
-                        new TechnologiesPrimaryKey(resultSet.getInt("id")),
+                        new TechnologiesRowPrimaryKey(resultSet.getInt("id")),
                         resultSet.getInt("drug_id"),
                         resultSet.getInt("make_duration"),
                         resultSet.getString("technology_desc"))
                 );
             }
 
-            return allRows;
+            return allTableRows;
         } catch (SQLException e) {
+            System.err.println("НЕ УДАЛОСЬ ПОЛУЧИТЬ ВСЕ СТРОКИ ИЗ ТАБЛИЦЫ technologies");
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public List<String> getColumnsNames() {
-        return columns.stream().toList();
-    }
-
-    @Override
-    public String getName() {
-        return "technologies";
+    public String getTranslatedName() {
+        return "Технологии";
     }
 }

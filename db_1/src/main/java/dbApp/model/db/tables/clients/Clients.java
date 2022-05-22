@@ -2,11 +2,10 @@ package dbApp.model.db.tables.clients;
 
 import dbApp.model.db.DataBase.DBService;
 import dbApp.model.db.entities.PrimaryKey;
-import dbApp.model.db.entities.Table;
 import dbApp.model.db.entities.TableRow;
-import dbApp.model.db.tables.AbstractTable;
-import dbApp.model.db.tables.technologies.TechnologiesPrimaryKey;
+import dbApp.model.db.entities.Table;
 import dbApp.model.db.tables.technologies.TechnologiesRow;
+import dbApp.model.db.tables.technologies.TechnologiesRowPrimaryKey;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,10 +13,25 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Clients extends AbstractTable implements Table {
+public class Clients extends Table {
 
     public Clients(DBService dbService) throws SQLException {
         super("clients", dbService);
+    }
+
+    @Override
+    protected void loadColumns() {
+        columnsNames.add("id");
+        columnsNames.add("first_name");
+        columnsNames.add("last_name");
+        columnsNames.add("address");
+        columnsNames.add("phone_number");
+
+        translatedColumnsNames.add("id");
+        translatedColumnsNames.add("Имя");
+        translatedColumnsNames.add("Фамилия");
+        translatedColumnsNames.add("Адрес");
+        translatedColumnsNames.add("Телефонный номер");
     }
 
     @Override
@@ -46,45 +60,40 @@ public class Clients extends AbstractTable implements Table {
     }
 
     @Override
-    public void deleteRow(PrimaryKey primaryKey) {
-    }
+    public void deleteRow(PrimaryKey primaryKey) {}
 
     @Override
-    public void updateRow(PrimaryKey primaryKey, TableRow newRowValue) {
+    public void updateRow(PrimaryKey primaryKey, TableRow updatedRow) {
 
     }
 
     @Override
     public List<TableRow> readAll() {
-        String query = "SELECT * FROM clients";
+        String sql = "SELECT * FROM clients";
 
         try (Statement statement = dbService.getDbConnection().createStatement()) {
-            ResultSet resultSet = statement.executeQuery(query);
-            ArrayList<TableRow> allRows = new ArrayList<>();
+            ResultSet resultSet = statement.executeQuery(sql);
+            ArrayList<TableRow> allTableRows = new ArrayList<>();
 
-//            while (resultSet.next()) {
-//                allRows.add(
-//                    new TechnologiesRow(
-//                        new TechnologiesPrimaryKey(resultSet.getInt("id")),
-//                        resultSet.getInt("drug_id"),
-//                        resultSet.getInt("make_duration"),
-//                        resultSet.getString("technology_desc"))
-//                );
-//            }
+            while (resultSet.next()) {
+                allTableRows.add(
+                    new TechnologiesRow(
+                        new TechnologiesRowPrimaryKey(resultSet.getInt("id")),
+                        resultSet.getInt("drug_id"),
+                        resultSet.getInt("make_duration"),
+                        resultSet.getString("technology_desc"))
+                );
+            }
 
-            return allRows;
+            return allTableRows;
         } catch (SQLException e) {
+            System.err.println("НЕ УДАЛОСЬ ПОЛУЧИТЬ ВСЕ СТРОКИ ИЗ ТАБЛИЦЫ technologies");
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public List<String> getColumnsNames() {
-        return columns.stream().toList();
-    }
-
-    @Override
-    public String getName() {
-        return tableName;
+    public String getTranslatedName() {
+        return "Клиенты";
     }
 }
