@@ -1,9 +1,9 @@
 package dbApp.model.db.tables.technologies;
 
 import dbApp.model.db.DataBase.DBService;
-import dbApp.model.db.entities.PrimaryKey;
-import dbApp.model.db.entities.TableRow;
-import dbApp.model.db.entities.Table;
+import dbApp.model.db.entities.AbstractPrimaryKey;
+import dbApp.model.db.entities.AbstractTableRow;
+import dbApp.model.db.entities.AbstractTable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,7 +11,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Technologies extends Table {
+public class Technologies extends AbstractTable {
 
     public Technologies(DBService dbService) throws SQLException {
         super("technologies", dbService);
@@ -19,6 +19,8 @@ public class Technologies extends Table {
 
     @Override
     protected void loadColumns() {
+        primaryKeyComponentsNames.add("id");
+
         columnsNames.add("id");
         columnsNames.add("drug_id");
         columnsNames.add("make_duration");
@@ -46,7 +48,7 @@ public class Technologies extends Table {
     public void dropTable() { }
 
     @Override
-    public void addRow(TableRow newRow) throws SQLException {
+    public void addRow(AbstractTableRow newRow) throws SQLException {
         TechnologiesRow newTechnologiesRow = (TechnologiesRow) newRow;
 
         String sql = """
@@ -65,37 +67,47 @@ public class Technologies extends Table {
     }
 
     @Override
-    public void deleteRow(PrimaryKey primaryKey) {
+    public void deleteRow(AbstractPrimaryKey primaryKeyValue) throws SQLException {
+        String sql = "DELETE FROM Technologies WHERE id = ?";
+
+        PreparedStatement preparedStatement
+            = dbService.getDbConnection().prepareStatement(sql);
+
+        preparedStatement.setInt(1,
+            ((TechnologiesRowPrimaryKey)primaryKeyValue).getId());
+
+        preparedStatement.execute();
+
+        preparedStatement.close();
     }
 
     @Override
-    public void updateRow(PrimaryKey primaryKey, TableRow updatedRow) {
-
+    public void updateRow(AbstractPrimaryKey primaryKeyValue,
+            AbstractTableRow updatedRow) throws SQLException {
+        // TODO
     }
 
     @Override
-    public List<TableRow> readAll() {
+    public List<AbstractTableRow> getAllRows() throws SQLException {
         String sql = "SELECT * FROM Technologies";
 
-        try (Statement statement = dbService.getDbConnection().createStatement()) {
-            ResultSet resultSet = statement.executeQuery(sql);
-            ArrayList<TableRow> allTableRows = new ArrayList<>();
+        Statement statement = dbService.getDbConnection().createStatement();
 
-            while (resultSet.next()) {
-                allTableRows.add(
-                    new TechnologiesRow(
-                        new TechnologiesRowPrimaryKey(resultSet.getInt("id")),
-                        resultSet.getInt("drug_id"),
-                        resultSet.getInt("make_duration"),
-                        resultSet.getString("technology_desc"))
-                );
-            }
+        ResultSet resultSet = statement.executeQuery(sql);
+        ArrayList<AbstractTableRow> allTableRows = new ArrayList<>();
 
-            return allTableRows;
-        } catch (SQLException e) {
-            System.err.println("НЕ УДАЛОСЬ ПОЛУЧИТЬ ВСЕ СТРОКИ ИЗ ТАБЛИЦЫ technologies");
-            throw new RuntimeException(e);
+        while (resultSet.next()) {
+            allTableRows.add(
+                new TechnologiesRow(
+                    resultSet.getInt("id"),
+                    resultSet.getInt("drug_id"),
+                    resultSet.getInt("make_duration"),
+                    resultSet.getString("technology_desc"))
+            );
         }
+
+        statement.close();
+        return allTableRows;
     }
 
     @Override

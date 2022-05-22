@@ -1,17 +1,14 @@
 package dbApp.model.db.tables.technologies;
 
-import dbApp.model.db.entities.PrimaryKey;
+import dbApp.model.db.entities.AbstractPrimaryKey;
 
-public class TechnologiesRowPrimaryKey extends PrimaryKey {
+public class TechnologiesRowPrimaryKey extends AbstractPrimaryKey {
 
-    private int id;
-
-    public TechnologiesRowPrimaryKey(int keyValue) {
-        id = keyValue;
+    public TechnologiesRowPrimaryKey(Object[] keyComponents) {
+        super(keyComponents);
     }
 
-    @Override
-    public Object getValue() {
-        return id;
+    public int getId() {
+        return (int) keyComponents[0];
     }
 }

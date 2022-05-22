@@ -3,14 +3,16 @@ package dbApp.model.db.entities;
 import dbApp.model.db.DataBase.DBService;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 // Сервисный родительский класс, куда вынесена реализация общих действий для всех таблиц
-public abstract class Table {
+public abstract class AbstractTable {
 
+    protected final Set<String> primaryKeyComponentsNames;
     protected final Set<String> columnsNames;
     protected final Set<String> translatedColumnsNames;
     protected final Map<String, Integer> columnsIndexes;
@@ -19,31 +21,31 @@ public abstract class Table {
 
     protected final String tableName;
 
-    public Table(String tableName, DBService dbService) throws SQLException {
+    public AbstractTable(String tableName, DBService dbService) {
         this.tableName = tableName;
         this.dbService = dbService;
 
+        primaryKeyComponentsNames = new LinkedHashSet<>();
         columnsNames = new LinkedHashSet<>();
         translatedColumnsNames = new LinkedHashSet<>();
         columnsIndexes = new HashMap<>();
         loadColumns();
     }
 
-    protected void loadColumns() {  }
+    protected abstract void loadColumns();
 
-    public void createTable() throws SQLException {  }
+    public abstract void createTable() throws SQLException;
 
-    public void dropTable() throws SQLException {  }
+    public abstract void dropTable() throws SQLException;
 
-    public void addRow(TableRow newRow) throws SQLException {  }
+    public abstract void addRow(AbstractTableRow newRow) throws SQLException;
 
-    public void deleteRow(PrimaryKey primaryKey) throws SQLException {  }
+    public abstract void deleteRow(AbstractPrimaryKey primaryKeyValue) throws SQLException;
 
-    public void updateRow(PrimaryKey primaryKey, TableRow updatedRow) throws SQLException {  }
+    public abstract void updateRow(AbstractPrimaryKey primaryKeyValue,
+        AbstractTableRow updatedRow) throws SQLException;
 
-    public List<TableRow> readAll() throws SQLException {
-        return null;
-    }
+    public abstract List<AbstractTableRow> getAllRows() throws SQLException;
 
     public List<String> getColumnsNames() {
         return columnsNames.stream().toList();
@@ -61,7 +63,9 @@ public abstract class Table {
         return tableName;
     }
 
-    public String getTranslatedName() {
-        return null;
+    public abstract String getTranslatedName();
+
+    public Set<String> getPrimaryKeyComponentsNames() {
+        return primaryKeyComponentsNames;
     }
 }

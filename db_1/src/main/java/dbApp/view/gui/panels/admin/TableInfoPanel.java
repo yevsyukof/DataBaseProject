@@ -1,7 +1,7 @@
 package dbApp.view.gui.panels.admin;
 
-import dbApp.model.db.entities.Table;
-import dbApp.view.gui.panels.SideWindow;
+import dbApp.model.db.entities.AbstractTable;
+import dbApp.view.gui.SideWindow;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -22,13 +22,13 @@ public class TableInfoPanel extends JPanel {
     private static final int DEFAULT_WIDTH = 250;
     private static final int DEFAULT_HEIGHT = 220;
 
-    public TableInfoPanel(Table table) {
+    public TableInfoPanel(AbstractTable table) {
         super(new BorderLayout());
         init(table);
         this.setPreferredSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
     }
 
-    private void init(Table table) {
+    private void init(AbstractTable table) {
         JLabel tableName = new JLabel("Название таблицы:    " + table.getTranslatedName());
         tableName.setFont(new Font("Verdana", Font.PLAIN, 14));
         this.add(tableName, BorderLayout.NORTH);
@@ -50,7 +50,7 @@ public class TableInfoPanel extends JPanel {
         this.setBorder(border);
     }
 
-    private JPanel createColumnsNamesPanel(Table table) {
+    private JPanel createColumnsNamesPanel(AbstractTable table) {
         JPanel columnsPanel = new JPanel(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();

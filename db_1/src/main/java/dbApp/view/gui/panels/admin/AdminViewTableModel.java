@@ -1,23 +1,24 @@
 package dbApp.view.gui.panels.admin;
 
-import dbApp.model.db.entities.TableRow;
-import dbApp.model.db.entities.Table;
+import dbApp.model.db.entities.AbstractTableRow;
+import dbApp.model.db.entities.AbstractTable;
 import java.sql.SQLException;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 public class AdminViewTableModel extends AbstractTableModel {
 
-    private final Table table;
+    private final AbstractTable table;
 
-    private List<TableRow> tableRows;
+    private List<AbstractTableRow> tableRows;
 
     private final ViewTablePanel viewTablePanel;
 
-    public AdminViewTableModel(ViewTablePanel viewTablePanel, Table table) throws SQLException {
+    public AdminViewTableModel(ViewTablePanel viewTablePanel,
+            AbstractTable table, List<AbstractTableRow> tableRows) throws SQLException {
         this.viewTablePanel = viewTablePanel;
         this.table = table;
-        this.tableRows = table.readAll();
+        this.tableRows = tableRows;
     }
 
     @Override
@@ -76,9 +77,9 @@ public class AdminViewTableModel extends AbstractTableModel {
 //        }
 //    }
 
-//    public void removeRow(int rowIndex) {
-//        rows.remove(rowIndex);
-//        super.fireTableRowsDeleted(rowIndex, rowIndex);
-//        super.fireTableDataChanged();
-//    }
+    public void removeRow(int rowIndex) {
+        tableRows.remove(rowIndex);
+        super.fireTableRowsDeleted(rowIndex, rowIndex);
+        super.fireTableDataChanged();
+    }
 }

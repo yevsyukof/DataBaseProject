@@ -1,4 +1,4 @@
-package dbApp.view.gui.panels;
+package dbApp.view.gui;
 
 import java.awt.Dimension;
 import javax.swing.JFrame;

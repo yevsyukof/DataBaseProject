@@ -1,17 +1,14 @@
 package dbApp.model.db.tables.clients;
 
-import dbApp.model.db.entities.PrimaryKey;
+import dbApp.model.db.entities.AbstractPrimaryKey;
 
-public class ClientsRowPrimaryKey extends PrimaryKey {
+public class ClientsRowPrimaryKey extends AbstractPrimaryKey {
 
-    private int id;
-
-    public ClientsRowPrimaryKey(int keyValue) {
-        this.id = keyValue;
+    public ClientsRowPrimaryKey(Object[] keyComponents) {
+        super(keyComponents);
     }
 
-    @Override
-    public Object getValue() {
-        return id;
+    public int getId() {
+        return (int) keyComponents[0];
     }
 }

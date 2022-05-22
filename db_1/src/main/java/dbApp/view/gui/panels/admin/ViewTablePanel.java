@@ -1,13 +1,15 @@
 package dbApp.view.gui.panels.admin;
 
-import dbApp.model.db.entities.Table;
-import dbApp.view.gui.panels.SideWindow;
+import dbApp.model.db.entities.AbstractTable;
+import dbApp.model.db.entities.AbstractTableRow;
+import dbApp.view.gui.SideWindow;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.sql.SQLException;
+import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -21,13 +23,14 @@ public class ViewTablePanel extends JPanel {
 
     private final SideWindow tableWindow;
 
-    private final Table table;
+    private final AbstractTable table;
+    private List<AbstractTableRow> tableRows;
 
     private JTable tableModel;
     private JScrollPane tableScrollPane;
     private JLabel infoLabel;
 
-    public ViewTablePanel(SideWindow tableWindow, Table table) {
+    public ViewTablePanel(SideWindow tableWindow, AbstractTable table) {
         this.tableWindow = tableWindow;
         this.table = table;
     }
@@ -48,48 +51,42 @@ public class ViewTablePanel extends JPanel {
         tableScrollPane = new JScrollPane(tableModel);
         this.add(tableScrollPane, gbc);
 
-        JPanel editButtons = new JPanel(new GridBagLayout());
+        JPanel editButtonsPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbcButtons = new GridBagConstraints();
         gbcButtons.gridx = 0;
         gbcButtons.gridy = 0;
 
         JButton addRowButton = new JButton("Добавить новый ряд");
         addRowButton.addActionListener(e -> {
-//            AddRowPanel addRowPanel = new AddRowPanel(mainFrame, this);
-//            addRowPanel.start();
+            AddRowPanel addRowPanel = new AddRowPanel(
+                new SideWindow("Добавление строки"), this,table);
+            addRowPanel.run();
         });
-
-        editButtons.add(addRowButton, gbcButtons);
-
+        editButtonsPanel.add(addRowButton, gbcButtons);
 
         gbcButtons.gridx++;
         JButton deleteRowButton = new JButton("Удалить выделенный ряд");
+        deleteRowButton.addActionListener(e -> {
+            if (tableModel.getSelectedRow() == -1) {
+                setTextOnInfoLabel("Ряд не выбран", true);
+            } else {
+                int rowToDeleteIdx = tableModel.getSelectedRow();
 
-//        deleteRowButton.addActionListener(e -> {      ///jTable == tableModel
-//            if (tableModel.getSelectedRow() == -1) {
-//                updateInfoLabel("Ряд не выбран", true);
-//            }
-//            else {
-////                Row row = new Row();
-////                for (int i = 0; i < jTable.getColumnCount(); ++i) {
-////                    row.add(new Value(table.findFieldByName(jTable.getColumnName(i)),
-////                        jTable.getModel().getValueAt(jTable.getSelectedRow(), i)));
-////                }
-////                String error = sqlExecutor.deleteRow(table, row);
-////                if (!error.isEmpty()) {
-////                    updateInfoLabel(error, true);
-////                }
-////                else {
-////                    updateInfoLabel("Ряд удален", false);
-////                    ((CustomTableModel)jTable.getModel()).removeRow(jTable.getSelectedRow());
-////                }
-//            }
-//        });
-        editButtons.add(deleteRowButton, gbcButtons);
+                try {
+                    table.deleteRow(tableRows.get(rowToDeleteIdx).getPrimaryKeyValue());
 
+                    setTextOnInfoLabel("Ряд удален", false);
+                    ((AdminViewTableModel) tableModel.getModel()).removeRow(
+                        tableModel.getSelectedRow());
+                } catch (SQLException ex) {
+                    setTextOnInfoLabel(ex.getMessage(), true);
+                }
+            }
+        });
+        editButtonsPanel.add(deleteRowButton, gbcButtons);
 
         gbc.gridy++;
-        this.add(editButtons, gbc);
+        this.add(editButtonsPanel, gbc);
 
         gbc.gridy++;
         infoLabel = new JLabel("\n");
@@ -100,7 +97,10 @@ public class ViewTablePanel extends JPanel {
             infoLabel.setText("Получение данных таблицы...");
             tableWindow.revalidate();
 
-            tableModel = new JTable(new AdminViewTableModel(this, table));
+            tableRows = table.getAllRows();
+
+            tableModel = new JTable(
+                new AdminViewTableModel(this, table, table.getAllRows()));
             tableModel.setEnabled(true);
 
             tableModel.setAutoCreateRowSorter(true);
@@ -115,20 +115,17 @@ public class ViewTablePanel extends JPanel {
             infoLabel.setText("\n");
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        } catch (NullPointerException ex) {
-            System.err.println("нул поинтер ексепшен");
-            ex.printStackTrace();
         }
     }
 
-    public void updateInfoLabel(String labelText, boolean isError) {
-        if (isError) {
-            infoLabel.setForeground(Color.RED);
-        }
-        else {
-            infoLabel.setForeground(Color.BLACK);
-        }
+    public void setTextOnInfoLabel(String labelText, boolean isError) {
+        infoLabel.setForeground(
+            isError
+                ? Color.RED
+                : Color.BLACK);
+
         infoLabel.setText(labelText);
+
         if (!isError) {
             tableWindow.revalidate();
             update(getGraphics());

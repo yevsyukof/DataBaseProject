@@ -1,19 +1,19 @@
 package dbApp.model.db.tables.clients;
 
 import dbApp.model.db.DataBase.DBService;
-import dbApp.model.db.entities.PrimaryKey;
-import dbApp.model.db.entities.TableRow;
-import dbApp.model.db.entities.Table;
-import dbApp.model.db.tables.technologies.TechnologiesRow;
-import dbApp.model.db.tables.technologies.TechnologiesRowPrimaryKey;
+import dbApp.model.db.entities.AbstractPrimaryKey;
+import dbApp.model.db.entities.AbstractTableRow;
+import dbApp.model.db.entities.AbstractTable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-public class Clients extends Table {
+public class Clients extends AbstractTable {
 
     public Clients(DBService dbService) throws SQLException {
         super("clients", dbService);
@@ -21,6 +21,8 @@ public class Clients extends Table {
 
     @Override
     protected void loadColumns() {
+        primaryKeyComponentsNames.add("id");
+
         columnsNames.add("id");
         columnsNames.add("first_name");
         columnsNames.add("last_name");
@@ -35,13 +37,13 @@ public class Clients extends Table {
     }
 
     @Override
-    public void createTable() { }
+    public void createTable() {  }
 
     @Override
-    public void dropTable() { }
+    public void dropTable() {  }
 
     @Override
-    public void addRow(TableRow newRow) throws SQLException {
+    public void addRow(AbstractTableRow newRow) throws SQLException {
         ClientsRow newClientsRow = (ClientsRow) newRow;
 
         String sql = """
@@ -60,36 +62,34 @@ public class Clients extends Table {
     }
 
     @Override
-    public void deleteRow(PrimaryKey primaryKey) {}
+    public void deleteRow(AbstractPrimaryKey primaryKeyValue) throws SQLException {  }
 
     @Override
-    public void updateRow(PrimaryKey primaryKey, TableRow updatedRow) {
-
-    }
+    public void updateRow(AbstractPrimaryKey primaryKeyValue,
+            AbstractTableRow updatedRow) throws SQLException {  }
 
     @Override
-    public List<TableRow> readAll() {
+    public List<AbstractTableRow> getAllRows() throws SQLException {
         String sql = "SELECT * FROM clients";
 
-        try (Statement statement = dbService.getDbConnection().createStatement()) {
-            ResultSet resultSet = statement.executeQuery(sql);
-            ArrayList<TableRow> allTableRows = new ArrayList<>();
+        Statement statement = dbService.getDbConnection().createStatement();
 
-            while (resultSet.next()) {
-                allTableRows.add(
-                    new TechnologiesRow(
-                        new TechnologiesRowPrimaryKey(resultSet.getInt("id")),
-                        resultSet.getInt("drug_id"),
-                        resultSet.getInt("make_duration"),
-                        resultSet.getString("technology_desc"))
-                );
-            }
+        ResultSet resultSet = statement.executeQuery(sql);
+        ArrayList<AbstractTableRow> allTableRows = new ArrayList<>();
 
-            return allTableRows;
-        } catch (SQLException e) {
-            System.err.println("НЕ УДАЛОСЬ ПОЛУЧИТЬ ВСЕ СТРОКИ ИЗ ТАБЛИЦЫ technologies");
-            throw new RuntimeException(e);
+        while (resultSet.next()) {
+            allTableRows.add(
+                new ClientsRow(
+                    resultSet.getInt("id"),
+                    resultSet.getString("first_name"),
+                    resultSet.getString("last_name"),
+                    resultSet.getString("address"),
+                    resultSet.getString("phone_number"))
+            );
         }
+
+        statement.close();
+        return allTableRows;
     }
 
     @Override

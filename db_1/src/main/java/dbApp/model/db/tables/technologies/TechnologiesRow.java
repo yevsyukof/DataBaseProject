@@ -1,36 +1,31 @@
 package dbApp.model.db.tables.technologies;
 
-import dbApp.model.db.entities.TableRow;
+import dbApp.model.db.entities.AbstractPrimaryKey;
+import dbApp.model.db.entities.AbstractTableRow;
 
-public class TechnologiesRow extends TableRow {
+public class TechnologiesRow extends AbstractTableRow {
 
-    private final TechnologiesRowPrimaryKey id;
+    private final int id;
     private final int drugId;
     private final int makeDuration;
     private final String technologyDesc;
-    
-    public TechnologiesRow(TechnologiesRowPrimaryKey id, int drugId,
-                int makeDuration, String technologyDesc) {
+
+    public TechnologiesRow(int id, int drugId,
+        int makeDuration, String technologyDesc) {
         this.id = id;
         this.drugId = drugId;
         this.makeDuration = makeDuration;
         this.technologyDesc = technologyDesc;
 
-        fields.add(id.getValue());
+        fields.add(id);
         fields.add(drugId);
         fields.add(makeDuration);
         fields.add(technologyDesc);
     }
 
-//    @Override
-//    public String getField(int columnIdx) {
-//        return
-//    }
-
-//    @Override
-//    public PrimaryKey getPrimaryKey() {
-//        return id;
-//    }
+    public int getId() {
+        return id;
+    }
 
     public int getDrugId() {
         return drugId;
@@ -42,5 +37,10 @@ public class TechnologiesRow extends TableRow {
 
     public String getTechnologyDesc() {
         return technologyDesc;
+    }
+
+    @Override
+    public AbstractPrimaryKey getPrimaryKeyValue() {
+        return new TechnologiesRowPrimaryKey(new Object[]{id});
     }
 }

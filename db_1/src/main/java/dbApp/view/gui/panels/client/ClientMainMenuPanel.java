@@ -51,9 +51,9 @@ public class ClientMainMenuPanel extends JPanel implements Runnable {
         this.add(exitButton, gbc);
 
         readRowCountButton.addActionListener(e -> {
-            infoBlock.setForeground(Color.RED);
-            infoBlock.setText("Текущее количество записей в таблице: "
-                + dataBase.getTechnologiesTable().readAll().size());
+//            infoBlock.setForeground(Color.RED);
+//            infoBlock.setText("Текущее количество записей в таблице: "
+//                + dataBase.getTechnologiesTable().getAllRows().size());
         });
 
         exitButton.addActionListener(e -> {

@@ -1,6 +1,6 @@
 package dbApp.model.db;
 
-import dbApp.model.db.entities.Table;
+import dbApp.model.db.entities.AbstractTable;
 import dbApp.model.db.tables.clients.Clients;
 import dbApp.model.db.tables.technologies.Technologies;
 import java.sql.Connection;
@@ -134,8 +134,8 @@ public class DataBase {
         return technologiesTable;
     }
 
-    public List<Table> getTables() {
-        ArrayList<Table> tables = new ArrayList<>(11);
+    public List<AbstractTable> getTables() {
+        ArrayList<AbstractTable> tables = new ArrayList<>(11);
         tables.add(technologiesTable);
         tables.add(clientsTable);
 
