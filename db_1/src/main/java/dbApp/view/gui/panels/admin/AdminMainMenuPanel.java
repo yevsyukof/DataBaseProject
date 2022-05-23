@@ -30,12 +30,13 @@ public class AdminMainMenuPanel extends JPanel implements Runnable {
     private void init() {
         BorderPanel northBorder = new BorderPanel(
             new FlowLayout(FlowLayout.CENTER, 100, 10),
-            new Dimension(100, 50));
+            new Dimension(100, 30));
         initNorthBorder(northBorder);
         this.add(northBorder, BorderLayout.NORTH);
 
         BorderPanel southBorder = new BorderPanel(
-            new FlowLayout(FlowLayout.RIGHT, 20, 10));
+            new FlowLayout(FlowLayout.RIGHT, 20, 10),
+            new Dimension(100, 50));
         initSouthBorder(southBorder);
         this.add(southBorder, BorderLayout.SOUTH);
 

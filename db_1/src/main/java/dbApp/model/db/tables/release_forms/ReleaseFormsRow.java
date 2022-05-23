@@ -2,7 +2,6 @@ package dbApp.model.db.tables.release_forms;
 
 import dbApp.model.db.entities.AbstractPrimaryKey;
 import dbApp.model.db.entities.AbstractTableRow;
-import dbApp.model.db.tables.purchase_requests.PurchaseRequestsRowPrimaryKey;
 import lombok.Getter;
 
 public class ReleaseFormsRow extends AbstractTableRow {

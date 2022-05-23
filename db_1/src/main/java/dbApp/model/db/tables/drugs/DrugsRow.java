@@ -43,6 +43,6 @@ public class DrugsRow extends AbstractTableRow {
 
     @Override
     public AbstractPrimaryKey getPrimaryKeyValue() {
-        return new DrugManufacturersRowPrimaryKey(new Object[]{id});
+        return new DrugsRowPrimaryKey(new Object[]{id});
     }
 }

@@ -19,8 +19,8 @@ import javax.swing.border.Border;
 
 public class TableInfoPanel extends JPanel {
 
-    private static final int DEFAULT_WIDTH = 250;
-    private static final int DEFAULT_HEIGHT = 220;
+    private static final int DEFAULT_WIDTH = 280;
+    private static final int DEFAULT_HEIGHT = 200;
 
     public TableInfoPanel(AbstractTable table) {
         super(new BorderLayout());
@@ -29,7 +29,7 @@ public class TableInfoPanel extends JPanel {
     }
 
     private void init(AbstractTable table) {
-        JLabel tableName = new JLabel("Название таблицы:    " + table.getTranslatedName());
+        JLabel tableName = new JLabel("Таблица:    " + table.getTranslatedName());
 //        tableName.setFont(new Font("Verdana", Font.PLAIN, 14));
         this.add(tableName, BorderLayout.NORTH);
 

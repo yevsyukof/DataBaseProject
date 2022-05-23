@@ -3,8 +3,11 @@ package dbApp.model.db;
 import dbApp.model.db.entities.AbstractTable;
 import dbApp.model.db.tables.clients.Clients;
 import dbApp.model.db.tables.drug_manufacturers.DrugManufacturers;
+import dbApp.model.db.tables.drug_to_component.DrugToComponent;
 import dbApp.model.db.tables.drugs.Drugs;
 import dbApp.model.db.tables.drugs_use_statistics.DrugsUseStatistics;
+import dbApp.model.db.tables.order_to_drugs.OrderToDrugs;
+import dbApp.model.db.tables.order_to_missing_drugs.OrderToMissingDrugs;
 import dbApp.model.db.tables.orders.Orders;
 import dbApp.model.db.tables.purchase_requests.PurchaseRequests;
 import dbApp.model.db.tables.release_forms.ReleaseForms;
@@ -74,6 +77,9 @@ public class DataBase {
     private final Orders orders;
     private final PurchaseRequests purchaseRequests;
     private final ReleaseForms releaseForms;
+    private final DrugToComponent drugToComponent;
+    private final OrderToDrugs orderToDrugs;
+    private final OrderToMissingDrugs orderToMissingDrugs;
 
     private final DBService dbService;
 
@@ -88,6 +94,9 @@ public class DataBase {
         orders = new Orders(dbService);
         purchaseRequests = new PurchaseRequests(dbService);
         releaseForms = new ReleaseForms(dbService);
+        drugToComponent = new DrugToComponent(dbService);
+        orderToDrugs = new OrderToDrugs(dbService);
+        orderToMissingDrugs = new OrderToMissingDrugs(dbService);
 
         curSessionUserRole = identifyUserRole(username);
         setRoleRights();
@@ -150,6 +159,9 @@ public class DataBase {
         tables.add(orders);
         tables.add(purchaseRequests);
         tables.add(releaseForms);
+        tables.add(drugToComponent);
+        tables.add(orderToDrugs);
+        tables.add(orderToMissingDrugs);
 
         return tables;
     }
