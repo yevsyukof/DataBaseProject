@@ -120,7 +120,7 @@ public class Orders extends AbstractTable {
                 new OrdersRow(
                     resultSet.getLong("id"),
                     resultSet.getInt("client_id"),
-                    resultSet.getDate("order_id"),
+                    resultSet.getDate("order_date"),
                     resultSet.getDate("ready_date"),
                     resultSet.getDate("issue_date")
                 )

@@ -1,6 +1,7 @@
-package dbApp.view.gui.panels.admin;
+package dbApp.view.gui.panels.admin.tables;
 
 import dbApp.model.db.entities.AbstractTable;
+import dbApp.view.gui.panels.admin.tables.TableInfoPanel;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.util.List;

@@ -1,4 +1,4 @@
-package dbApp.view.gui.panels.admin;
+package dbApp.view.gui.panels.admin.tables;
 
 import dbApp.model.db.entities.AbstractPrimaryKey;
 import dbApp.model.db.entities.AbstractTable;

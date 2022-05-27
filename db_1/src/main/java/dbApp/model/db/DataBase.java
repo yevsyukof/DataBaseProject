@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 
 public class DataBase {
 
@@ -69,16 +70,27 @@ public class DataBase {
 
     private final DbUserRole curSessionUserRole;
 
+    @Getter
     private final Technologies technologiesTable;
+    @Getter
     private final Clients clientsTable;
+    @Getter
     private final DrugManufacturers drugManufacturers;
+    @Getter
     private final Drugs drugs;
+    @Getter
     private final DrugsUseStatistics drugsUseStatistics;
+    @Getter
     private final Orders orders;
+    @Getter
     private final PurchaseRequests purchaseRequests;
+    @Getter
     private final ReleaseForms releaseForms;
+    @Getter
     private final DrugToComponent drugToComponent;
+    @Getter
     private final OrderToDrugs orderToDrugs;
+    @Getter
     private final OrderToMissingDrugs orderToMissingDrugs;
 
     private final DBService dbService;

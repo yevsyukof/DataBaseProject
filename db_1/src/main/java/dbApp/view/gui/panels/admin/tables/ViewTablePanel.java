@@ -1,4 +1,4 @@
-package dbApp.view.gui.panels.admin;
+package dbApp.view.gui.panels.admin.tables;
 
 import dbApp.model.db.entities.AbstractTable;
 import dbApp.model.db.entities.AbstractTableRow;
@@ -114,7 +114,7 @@ public class ViewTablePanel extends JPanel {
             tableRows = table.getAllRows();
 
             tableModel = new JTable(
-                new AdminViewTableModel(this, table, table.getAllRows()));
+                new AdminViewTableModel(table, table.getAllRows()));
             tableModel.setEnabled(true);
 
             tableModel.setAutoCreateRowSorter(true);

@@ -4,8 +4,8 @@ import dbApp.model.db.DataBase;
 import dbApp.view.gui.MainWindow;
 import dbApp.view.gui.panels.BorderPanel;
 import dbApp.view.gui.panels.LoginPanel;
+import dbApp.view.gui.panels.admin.tables.TablesListPanel;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -16,8 +16,9 @@ import javax.swing.JPanel;
 public class AdminMainMenuPanel extends JPanel implements Runnable {
 
     private final MainWindow mainWindow;
-    private final DataBase dataBase;
     private final LoginPanel loginPanel;
+
+    private final DataBase dataBase;
 
     public AdminMainMenuPanel(MainWindow mainWindow, DataBase dataBase, LoginPanel loginPanel) {
         this.mainWindow = mainWindow;
@@ -58,7 +59,9 @@ public class AdminMainMenuPanel extends JPanel implements Runnable {
     private void initSouthBorder(BorderPanel southBorder) {
         JButton reportsButton = new JButton("Отчеты по работе аптеки");
         reportsButton.addActionListener(e -> {
-
+            ReportsPanel reportsPanel = new ReportsPanel(mainWindow, this,
+                dataBase);
+            reportsPanel.run();
         });
         southBorder.add(reportsButton);
 
