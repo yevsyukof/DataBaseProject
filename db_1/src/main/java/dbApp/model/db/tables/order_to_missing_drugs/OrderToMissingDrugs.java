@@ -4,6 +4,8 @@ import dbApp.model.db.DataBase.DBService;
 import dbApp.model.db.entities.AbstractPrimaryKey;
 import dbApp.model.db.entities.AbstractTable;
 import dbApp.model.db.entities.AbstractTableRow;
+import dbApp.model.db.tables.order_to_drugs.OrderToDrugsRow;
+import dbApp.model.db.tables.order_to_drugs.OrderToDrugsRowUniqueKey;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -66,8 +68,32 @@ public class OrderToMissingDrugs extends AbstractTable {
     }
 
     @Override
-    public void updateRow(AbstractPrimaryKey primaryKeyValue,
-        AbstractTableRow updatedRow) throws SQLException {
+    public void updateRow(AbstractPrimaryKey primaryKeyValue, AbstractTableRow updatedRow)
+            throws SQLException {
+        OrderToMissingDrugsRowUniqueKey pk = (OrderToMissingDrugsRowUniqueKey) primaryKeyValue;
+        OrderToMissingDrugsRow row = (OrderToMissingDrugsRow) updatedRow;
+
+        String sql = """
+            UPDATE order_to_missing_drugs
+            SET order_id = ?, drug_id = ?, deficit = ?
+            WHERE order_id = ?
+            """;
+
+        PreparedStatement preparedStatement
+            = dbService.getDbConnection().prepareStatement(sql);
+
+        try {
+            preparedStatement.setLong(1, row.getOrderId());
+            preparedStatement.setInt(2, row.getDrugId());
+            preparedStatement.setInt(3, row.getDeficit());
+
+            preparedStatement.setLong(4, pk.getOrderId());
+        } catch (IllegalArgumentException e) {
+            throw new SQLException(e.getMessage());
+        }
+
+        preparedStatement.execute();
+        preparedStatement.close();
     }
 
     @Override

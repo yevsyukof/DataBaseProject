@@ -5,6 +5,8 @@ import dbApp.model.db.entities.AbstractPrimaryKey;
 import dbApp.model.db.entities.AbstractTableRow;
 import dbApp.model.db.entities.AbstractTable;
 import dbApp.model.db.errors.InvalidRowFormatException;
+import dbApp.model.db.tables.release_forms.ReleaseFormsRow;
+import dbApp.model.db.tables.release_forms.ReleaseFormsRowPrimaryKey;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -83,9 +85,33 @@ public class Technologies extends AbstractTable {
     }
 
     @Override
-    public void updateRow(AbstractPrimaryKey primaryKeyValue,
-            AbstractTableRow updatedRow) throws SQLException {
-        // TODO
+    public void updateRow(AbstractPrimaryKey primaryKeyValue, AbstractTableRow updatedRow)
+            throws SQLException {
+        TechnologiesRowPrimaryKey pk = (TechnologiesRowPrimaryKey) primaryKeyValue;
+        TechnologiesRow row = (TechnologiesRow) updatedRow;
+
+        String sql = """
+            UPDATE technologies
+            SET id = ?, drug_id = ?, make_duration = ?, technology_desc = ?
+            WHERE id = ?
+            """;
+
+        PreparedStatement preparedStatement
+            = dbService.getDbConnection().prepareStatement(sql);
+
+        try {
+            preparedStatement.setInt(1, row.getId());
+            preparedStatement.setInt(2, row.getDrugId());
+            preparedStatement.setInt(3, row.getMakeDuration());
+            preparedStatement.setString(4, row.getTechnologyDesc());
+
+            preparedStatement.setLong(5, pk.getId());
+        } catch (IllegalArgumentException e) {
+            throw new SQLException(e.getMessage());
+        }
+
+        preparedStatement.execute();
+        preparedStatement.close();
     }
 
     @Override

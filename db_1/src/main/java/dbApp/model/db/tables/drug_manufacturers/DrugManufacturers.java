@@ -4,6 +4,8 @@ import dbApp.model.db.DataBase.DBService;
 import dbApp.model.db.entities.AbstractPrimaryKey;
 import dbApp.model.db.entities.AbstractTable;
 import dbApp.model.db.entities.AbstractTableRow;
+import dbApp.model.db.tables.clients.ClientsRow;
+import dbApp.model.db.tables.clients.ClientsRowPrimaryKey;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -63,8 +65,29 @@ public class DrugManufacturers extends AbstractTable {
     }
 
     @Override
-    public void updateRow(AbstractPrimaryKey primaryKeyValue,
-        AbstractTableRow updatedRow) throws SQLException {
+    public void updateRow(AbstractPrimaryKey primaryKeyValue, AbstractTableRow updatedRow)
+            throws SQLException {
+        DrugManufacturersRowPrimaryKey pk = (DrugManufacturersRowPrimaryKey) primaryKeyValue;
+        DrugManufacturersRow row = (DrugManufacturersRow) updatedRow;
+
+        String sql = """
+            UPDATE drug_manufacturers SET id = ?, name = ? WHERE id = ?
+            """;
+
+        PreparedStatement preparedStatement
+            = dbService.getDbConnection().prepareStatement(sql);
+
+        try {
+            preparedStatement.setInt(1, row.getId());
+            preparedStatement.setString(2, row.getName());
+
+            preparedStatement.setInt(3, pk.getId());
+        } catch (IllegalArgumentException e) {
+            throw new SQLException(e.getMessage());
+        }
+
+        preparedStatement.execute();
+        preparedStatement.close();
     }
 
     @Override

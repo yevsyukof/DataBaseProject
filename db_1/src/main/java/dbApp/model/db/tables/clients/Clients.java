@@ -78,15 +78,40 @@ public class Clients extends AbstractTable {
             = dbService.getDbConnection().prepareStatement(sql);
 
         preparedStatement.setInt(1,
-            ((ClientsRowPrimaryKey)primaryKeyValue).getId());
+            ((ClientsRowPrimaryKey) primaryKeyValue).getId());
 
         preparedStatement.execute();
         preparedStatement.close();
     }
 
     @Override
-    public void updateRow(AbstractPrimaryKey primaryKeyValue,
-        AbstractTableRow updatedRow) throws SQLException {
+    public void updateRow(AbstractPrimaryKey primaryKeyValue, AbstractTableRow updatedRow)
+            throws SQLException {
+        ClientsRowPrimaryKey pk = (ClientsRowPrimaryKey) primaryKeyValue;
+        ClientsRow row = (ClientsRow) updatedRow;
+
+        String sql = """
+            UPDATE clients SET id = ?, first_name = ?, last_name = ?, address = ?, phone_number = ?
+            WHERE id = ?
+            """;
+
+        PreparedStatement preparedStatement
+            = dbService.getDbConnection().prepareStatement(sql);
+
+        try {
+            preparedStatement.setInt(1, row.getId());
+            preparedStatement.setString(2, row.getFirstName());
+            preparedStatement.setString(3, row.getLastName());
+            preparedStatement.setString(4, row.getAddress());
+            preparedStatement.setString(5, row.getPhoneNumber());
+
+            preparedStatement.setInt(6, pk.getId());
+        } catch (IllegalArgumentException e) {
+            throw new SQLException(e.getMessage());
+        }
+
+        preparedStatement.execute();
+        preparedStatement.close();
     }
 
     @Override

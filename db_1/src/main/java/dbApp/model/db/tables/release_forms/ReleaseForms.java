@@ -64,8 +64,31 @@ public class ReleaseForms extends AbstractTable {
     }
 
     @Override
-    public void updateRow(AbstractPrimaryKey primaryKeyValue,
-        AbstractTableRow updatedRow) throws SQLException {
+    public void updateRow(AbstractPrimaryKey primaryKeyValue, AbstractTableRow updatedRow)
+            throws SQLException {
+        ReleaseFormsRowPrimaryKey pk = (ReleaseFormsRowPrimaryKey) primaryKeyValue;
+        ReleaseFormsRow row = (ReleaseFormsRow) updatedRow;
+
+        String sql = """
+            UPDATE release_forms
+            SET id = ?, drug_type = ?
+            WHERE id = ?
+            """;
+
+        PreparedStatement preparedStatement
+            = dbService.getDbConnection().prepareStatement(sql);
+
+        try {
+            preparedStatement.setInt(1, row.getId());
+            preparedStatement.setString(2, row.getDrugType());
+
+            preparedStatement.setLong(3, pk.getId());
+        } catch (IllegalArgumentException e) {
+            throw new SQLException(e.getMessage());
+        }
+
+        preparedStatement.execute();
+        preparedStatement.close();
     }
 
     @Override

@@ -76,8 +76,34 @@ public class DrugsUseStatistics extends AbstractTable {
     }
 
     @Override
-    public void updateRow(AbstractPrimaryKey primaryKeyValue,
-        AbstractTableRow updatedRow) throws SQLException {
+    public void updateRow(AbstractPrimaryKey primaryKeyValue, AbstractTableRow updatedRow)
+            throws SQLException {
+        DrugsUseStatisticsRowPrimaryKey pk = (DrugsUseStatisticsRowPrimaryKey) primaryKeyValue;
+        DrugsUseStatisticsRow row = (DrugsUseStatisticsRow) updatedRow;
+
+        String sql = """
+            UPDATE drugs_use_statistics
+            SET id = ?, drug_id = ?, order_id = ?, record_date = ?, volume = ?
+            WHERE id = ?
+            """;
+
+        PreparedStatement preparedStatement
+            = dbService.getDbConnection().prepareStatement(sql);
+
+        try {
+            preparedStatement.setInt(1, row.getId());
+            preparedStatement.setInt(2, row.getDrugId());
+            preparedStatement.setLong(3, row.getOrderId());
+            preparedStatement.setInt(4, row.getVolume());
+            preparedStatement.setDate(5, row.getRecordDate());
+
+            preparedStatement.setInt(6, pk.getId());
+        } catch (IllegalArgumentException e) {
+            throw new SQLException(e.getMessage());
+        }
+
+        preparedStatement.execute();
+        preparedStatement.close();
     }
 
     @Override

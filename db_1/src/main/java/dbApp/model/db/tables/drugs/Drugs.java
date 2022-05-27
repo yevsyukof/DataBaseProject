@@ -4,6 +4,8 @@ import dbApp.model.db.DataBase.DBService;
 import dbApp.model.db.entities.AbstractPrimaryKey;
 import dbApp.model.db.entities.AbstractTable;
 import dbApp.model.db.entities.AbstractTableRow;
+import dbApp.model.db.tables.drug_manufacturers.DrugManufacturersRow;
+import dbApp.model.db.tables.drug_manufacturers.DrugManufacturersRowPrimaryKey;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -79,8 +81,37 @@ public class Drugs extends AbstractTable {
     }
 
     @Override
-    public void updateRow(AbstractPrimaryKey primaryKeyValue,
-        AbstractTableRow updatedRow) throws SQLException {
+    public void updateRow(AbstractPrimaryKey primaryKeyValue, AbstractTableRow updatedRow)
+            throws SQLException {
+        DrugsRowPrimaryKey pk = (DrugsRowPrimaryKey) primaryKeyValue;
+        DrugsRow row = (DrugsRow) updatedRow;
+
+        String sql = """
+            UPDATE drugs
+            SET id = ?, name = ?, release_form_id = ?, drug_manufacturer_id = ?,
+                inventory_volume = ?, critical_rate = ?, price = ?
+            WHERE id = ?
+            """;
+
+        PreparedStatement preparedStatement
+            = dbService.getDbConnection().prepareStatement(sql);
+
+        try {
+            preparedStatement.setInt(1, row.getId());
+            preparedStatement.setString(2, row.getName());
+            preparedStatement.setInt(3, row.getReleaseFormId());
+            preparedStatement.setInt(4, row.getDrugManufacturerId());
+            preparedStatement.setInt(5, row.getInventoryVolume());
+            preparedStatement.setInt(6, row.getCriticalRate());
+            preparedStatement.setInt(7, row.getPrice());
+
+            preparedStatement.setInt(8, pk.getId());
+        } catch (IllegalArgumentException e) {
+            throw new SQLException(e.getMessage());
+        }
+
+        preparedStatement.execute();
+        preparedStatement.close();
     }
 
     @Override

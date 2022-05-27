@@ -2,7 +2,8 @@ package dbApp.model.db.tables.drugs;
 
 import dbApp.model.db.entities.AbstractPrimaryKey;
 import dbApp.model.db.entities.AbstractTableRow;
-import dbApp.model.db.tables.drug_manufacturers.DrugManufacturersRowPrimaryKey;
+import java.sql.SQLException;
+import java.util.List;
 import lombok.Getter;
 
 public class DrugsRow extends AbstractTableRow {
@@ -32,13 +33,39 @@ public class DrugsRow extends AbstractTableRow {
         this.criticalRate = criticalRate;
         this.price = price;
 
-        fields.add(id);
-        fields.add(name);
-        fields.add(releaseFormId);
-        fields.add(drugManufacturerId);
-        fields.add(inventoryVolume);
-        fields.add(criticalRate);
-        fields.add(price);
+        loadFieldsValues();
+    }
+
+    private DrugsRow(List<String> newFieldsValues) throws SQLException {
+        try {
+            this.id = Integer.valueOf(newFieldsValues.get(0));
+            this.name = newFieldsValues.get(1);
+            this.releaseFormId = Integer.valueOf(newFieldsValues.get(2));
+            this.drugManufacturerId = Integer.valueOf(newFieldsValues.get(3));
+            this.inventoryVolume = Integer.valueOf(newFieldsValues.get(4));
+            this.criticalRate = Integer.valueOf(newFieldsValues.get(5));
+            this.price = Integer.valueOf(newFieldsValues.get(6));
+        } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
+            throw new SQLException(e.getMessage());
+        }
+        loadFieldsValues();
+    }
+
+    @Override
+    protected void loadFieldsValues() {
+        fieldsValues.clear();
+        fieldsValues.add(id);
+        fieldsValues.add(name);
+        fieldsValues.add(releaseFormId);
+        fieldsValues.add(drugManufacturerId);
+        fieldsValues.add(inventoryVolume);
+        fieldsValues.add(criticalRate);
+        fieldsValues.add(price);
+    }
+
+    @Override
+    public AbstractTableRow buildUpdatedCopy(List<String> newFieldsValues) throws SQLException {
+        return new DrugsRow(newFieldsValues);
     }
 
     @Override

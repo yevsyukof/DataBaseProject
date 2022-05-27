@@ -2,6 +2,8 @@ package dbApp.model.db.tables.clients;
 
 import dbApp.model.db.entities.AbstractPrimaryKey;
 import dbApp.model.db.entities.AbstractTableRow;
+import java.sql.SQLException;
+import java.util.List;
 import lombok.Getter;
 
 public class ClientsRow extends AbstractTableRow {
@@ -26,11 +28,36 @@ public class ClientsRow extends AbstractTableRow {
         this.address = address;
         this.phoneNumber = phoneNumber;
 
-        fields.add(id);
-        fields.add(firstName);
-        fields.add(lastName);
-        fields.add(address);
-        fields.add(phoneNumber);
+        loadFieldsValues();
+    }
+
+    private ClientsRow(List<String> newFieldsValues) throws SQLException {
+        try {
+            this.id = Integer.valueOf(newFieldsValues.get(0));
+            this.firstName = newFieldsValues.get(1);
+            this.lastName = newFieldsValues.get(2);
+            this.address = newFieldsValues.get(3);
+            this.phoneNumber = newFieldsValues.get(4);
+        } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
+            throw new SQLException(e.getMessage());
+        }
+
+        loadFieldsValues();
+    }
+
+    @Override
+    protected void loadFieldsValues() {
+        fieldsValues.clear();
+        fieldsValues.add(id);
+        fieldsValues.add(firstName);
+        fieldsValues.add(lastName);
+        fieldsValues.add(address);
+        fieldsValues.add(phoneNumber);
+    }
+
+    @Override
+    public AbstractTableRow buildUpdatedCopy(List<String> newFieldsValues) throws SQLException {
+        return new ClientsRow(newFieldsValues);
     }
 
     @Override

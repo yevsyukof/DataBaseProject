@@ -4,6 +4,8 @@ import dbApp.model.db.entities.AbstractPrimaryKey;
 import dbApp.model.db.entities.AbstractTableRow;
 import dbApp.model.db.tables.drug_manufacturers.DrugManufacturersRowPrimaryKey;
 import java.sql.Date;
+import java.sql.SQLException;
+import java.util.List;
 import lombok.Getter;
 
 public class DrugsUseStatisticsRow extends AbstractTableRow {
@@ -27,11 +29,35 @@ public class DrugsUseStatisticsRow extends AbstractTableRow {
         this.recordDate = recordDate;
         this.volume = volume;
 
-        fields.add(id);
-        fields.add(drugId);
-        fields.add(orderId);
-        fields.add(recordDate);
-        fields.add(volume);
+        loadFieldsValues();
+    }
+
+    private DrugsUseStatisticsRow(List<String> newFieldsValues) throws SQLException {
+        try {
+            this.id = Integer.valueOf(newFieldsValues.get(0));
+            this.drugId = Integer.valueOf(newFieldsValues.get(1));
+            this.orderId = Long.valueOf(newFieldsValues.get(2));
+            this.recordDate = Date.valueOf(newFieldsValues.get(3));
+            this.volume = Integer.valueOf(newFieldsValues.get(4));
+        } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
+            throw new SQLException(e.getMessage());
+        }
+        loadFieldsValues();
+    }
+
+    @Override
+    protected void loadFieldsValues() {
+        fieldsValues.clear();
+        fieldsValues.add(id);
+        fieldsValues.add(drugId);
+        fieldsValues.add(orderId);
+        fieldsValues.add(recordDate);
+        fieldsValues.add(volume);
+    }
+
+    @Override
+    public AbstractTableRow buildUpdatedCopy(List<String> newFieldsValues) throws SQLException {
+        return new DrugsUseStatisticsRow(newFieldsValues);
     }
 
     @Override

@@ -56,7 +56,7 @@ public class ViewTablePanel extends JPanel {
         gbcButtons.gridx = 0;
         gbcButtons.gridy = 0;
 
-        JButton addRowButton = new JButton("Добавить новый ряд");
+        JButton addRowButton = new JButton("Добавить запись");
         addRowButton.addActionListener(e -> {
             AddRowPanel addRowPanel = new AddRowPanel(tableWindow, this, table);
             addRowPanel.run();
@@ -64,7 +64,22 @@ public class ViewTablePanel extends JPanel {
         editButtonsPanel.add(addRowButton, gbcButtons);
 
         gbcButtons.gridx++;
-        JButton deleteRowButton = new JButton("Удалить выделенный ряд");
+        JButton updateButton = new JButton("Обновить запись");
+        updateButton.addActionListener(e -> {
+            if (tableModel.getSelectedRow() == -1) {
+                setTextOnInfoLabel("Ряд не выбран", true);
+            } else {
+                int rowToUpdateIdx = tableModel.getSelectedRow();
+
+                UpdateRowPanel updateRowPanel = new UpdateRowPanel(tableWindow, this,
+                    table, tableRows.get(rowToUpdateIdx));
+                updateRowPanel.run();
+            }
+        });
+        editButtonsPanel.add(updateButton, gbcButtons);
+
+        gbcButtons.gridx++;
+        JButton deleteRowButton = new JButton("Удалить запись");
         deleteRowButton.addActionListener(e -> {
             if (tableModel.getSelectedRow() == -1) {
                 setTextOnInfoLabel("Ряд не выбран", true);

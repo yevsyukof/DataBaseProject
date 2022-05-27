@@ -4,6 +4,8 @@ import dbApp.model.db.DataBase.DBService;
 import dbApp.model.db.entities.AbstractPrimaryKey;
 import dbApp.model.db.entities.AbstractTable;
 import dbApp.model.db.entities.AbstractTableRow;
+import dbApp.model.db.tables.drug_manufacturers.DrugManufacturersRow;
+import dbApp.model.db.tables.drug_manufacturers.DrugManufacturersRowPrimaryKey;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -68,8 +70,32 @@ public class DrugToComponent extends AbstractTable {
     }
 
     @Override
-    public void updateRow(AbstractPrimaryKey primaryKeyValue,
-        AbstractTableRow updatedRow) throws SQLException {
+    public void updateRow(AbstractPrimaryKey primaryKeyValue, AbstractTableRow updatedRow)
+            throws SQLException {
+        DrugToComponentRowUniqueKey pk = (DrugToComponentRowUniqueKey) primaryKeyValue;
+        DrugToComponentRow row = (DrugToComponentRow) updatedRow;
+
+        String sql = """
+            UPDATE drug_to_component SET drug_id = ?, component_id = ?, required_volume = ?
+            WHERE drug_id = ? AND component_id = ?
+            """;
+
+        PreparedStatement preparedStatement
+            = dbService.getDbConnection().prepareStatement(sql);
+
+        try {
+            preparedStatement.setInt(1, row.getDrugId());
+            preparedStatement.setInt(2, row.getComponentId());
+            preparedStatement.setInt(3, row.getRequiredVolume());
+
+            preparedStatement.setInt(4, pk.getDrugId());
+            preparedStatement.setInt(5, pk.getComponentId());
+        } catch (IllegalArgumentException e) {
+            throw new SQLException(e.getMessage());
+        }
+
+        preparedStatement.execute();
+        preparedStatement.close();
     }
 
     @Override

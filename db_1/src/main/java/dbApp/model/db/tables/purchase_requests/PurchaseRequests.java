@@ -4,6 +4,8 @@ import dbApp.model.db.DataBase.DBService;
 import dbApp.model.db.entities.AbstractPrimaryKey;
 import dbApp.model.db.entities.AbstractTable;
 import dbApp.model.db.entities.AbstractTableRow;
+import dbApp.model.db.tables.order_to_missing_drugs.OrderToMissingDrugsRow;
+import dbApp.model.db.tables.order_to_missing_drugs.OrderToMissingDrugsRowUniqueKey;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -71,8 +73,33 @@ public class PurchaseRequests extends AbstractTable {
     }
 
     @Override
-    public void updateRow(AbstractPrimaryKey primaryKeyValue,
-        AbstractTableRow updatedRow) throws SQLException {
+    public void updateRow(AbstractPrimaryKey primaryKeyValue, AbstractTableRow updatedRow)
+            throws SQLException {
+        PurchaseRequestsRowPrimaryKey pk = (PurchaseRequestsRowPrimaryKey) primaryKeyValue;
+        PurchaseRequestsRow row = (PurchaseRequestsRow) updatedRow;
+
+        String sql = """
+            UPDATE purchase_requests
+            SET id = ?, required_drug_id = ?, volume = ?, creation_date = ?
+            WHERE id = ?
+            """;
+
+        PreparedStatement preparedStatement
+            = dbService.getDbConnection().prepareStatement(sql);
+
+        try {
+            preparedStatement.setInt(1, row.getId());
+            preparedStatement.setInt(2, row.getRequiredDrugId());
+            preparedStatement.setInt(3, row.getVolume());
+            preparedStatement.setDate(4, row.getCreationDate());
+
+            preparedStatement.setLong(5, pk.getId());
+        } catch (IllegalArgumentException e) {
+            throw new SQLException(e.getMessage());
+        }
+
+        preparedStatement.execute();
+        preparedStatement.close();
     }
 
     @Override
