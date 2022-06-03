@@ -1,11 +1,13 @@
 package dbApp;
 
-import dbApp.view.View;
+import dbApp.gui.MainWindow;
+import dbApp.gui.panels.LoginPanel;
 
 public class Main {
 
     public static void main(String[] args) {
-        View view = new View();
-        view.run();
+        MainWindow mainWindow = new MainWindow();
+        LoginPanel loginPanel = new LoginPanel(mainWindow);
+        loginPanel.run();
     }
 }
