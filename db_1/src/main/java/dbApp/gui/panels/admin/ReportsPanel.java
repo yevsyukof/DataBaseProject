@@ -1,5 +1,8 @@
 package dbApp.gui.panels.admin;
 
+import dbApp.db.reports.ReportTable6;
+import dbApp.db.reports.ReportTable8;
+import dbApp.db.reports.ReportTable9;
 import dbApp.gui.MainWindow;
 import dbApp.gui.SideWindow;
 import dbApp.db.reports.ReportTable;
@@ -43,7 +46,8 @@ public class ReportsPanel extends JPanel implements Runnable {
         });
         southPanel.add(exitButton);
 
-        JButton report1Button = new JButton("Отчет 1");
+        JButton report1Button = new JButton(
+            "Покупатели, которые не пришли вовремя забрать заказ");
         report1Button.addActionListener(e -> {
             ReportTable reportTable = new ReportTable1(dataBase);
 
@@ -53,7 +57,8 @@ public class ReportsPanel extends JPanel implements Runnable {
         });
         centrePanel.add(report1Button);
 
-        JButton report2Button = new JButton("Отчет 2");
+        JButton report2Button = new JButton(
+            "Покупатели, ждущие поставок медикаментов");
         report2Button.addActionListener(e -> {
             Report2Panel report2Panel = new Report2Panel(
                 new SideWindow("Отчет 2"), dataBase);
@@ -61,7 +66,8 @@ public class ReportsPanel extends JPanel implements Runnable {
         });
         centrePanel.add(report2Button);
 
-        JButton report3Button = new JButton("Отчет 3");
+        JButton report3Button = new JButton(
+            "10 наиболее часто используемых медикаментов");
         report3Button.addActionListener(e -> {
             Report3Panel report3Panel = new Report3Panel(
                 new SideWindow("Отчет 3"), dataBase);
@@ -69,7 +75,8 @@ public class ReportsPanel extends JPanel implements Runnable {
         });
         centrePanel.add(report3Button);
 
-        JButton report4Button = new JButton("Отчет 4");
+        JButton report4Button = new JButton(
+            "Статистика использования веществ");
         report4Button.addActionListener(e -> {
             Report4Panel report4Panel = new Report4Panel(
                 new SideWindow("Отчет 4"), dataBase
@@ -78,9 +85,42 @@ public class ReportsPanel extends JPanel implements Runnable {
         });
         centrePanel.add(report4Button);
 
-        for (int i = 5; i <= 13; ++i) {
-            centrePanel.add(new JButton("Отчет " + i));
-        }
+        JButton report6Button = new JButton(
+            "Лекарства, достигшие критической нормы");
+        report6Button.addActionListener(e -> {
+            ReportTable reportTable = new ReportTable6(dataBase);
+
+            ViewReportTablePanel viewTablePanel = new ViewReportTablePanel(
+                new SideWindow("Отчет 6"), reportTable);
+            viewTablePanel.run();
+        });
+        centrePanel.add(report6Button);
+
+        JButton report8Button = new JButton(
+            "Заказы в производстве");
+        report8Button.addActionListener(e -> {
+            ReportTable reportTable = new ReportTable8(dataBase);
+
+            ViewReportTablePanel viewTablePanel = new ViewReportTablePanel(
+                new SideWindow("Отчет 8"), reportTable);
+            viewTablePanel.run();
+        });
+        centrePanel.add(report8Button);
+
+        JButton report9Button = new JButton(
+            "Отчет по недостающим заказам препаратам");
+        report9Button.addActionListener(e -> {
+            ReportTable reportTable = new ReportTable9(dataBase);
+
+            ViewReportTablePanel viewTablePanel = new ViewReportTablePanel(
+                new SideWindow("Отчет 9"), reportTable);
+            viewTablePanel.run();
+        });
+        centrePanel.add(report9Button);
+
+//        for (int i = 5; i <= 13; ++i) {
+//            centrePanel.add(new JButton("Отчет " + i));
+//        }
     }
 
     @Override

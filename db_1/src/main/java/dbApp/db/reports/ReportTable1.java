@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 // Таблица отчета о клиентах, пропустивших заказ
 public class ReportTable1 extends ReportTable {
@@ -16,13 +15,9 @@ public class ReportTable1 extends ReportTable {
 
         setTranslatedColumnsNames(dataBase.getClientsTable().getTranslatedColumnsNames());
         translatedColumnsNames.remove("id");
-        setColumnsNames(dataBase.getClientsTable().getColumnsNames());
-        columnsNames.remove("id");
-    }
 
-    @Override
-    public List<String> getPossibleQueryParameters() throws SQLException {
-        return null;
+//        setColumnsNames(dataBase.getClientsTable().getColumnsNames());
+//        columnsNames.remove("id");
     }
 
     @Override
@@ -37,7 +32,7 @@ public class ReportTable1 extends ReportTable {
         ResultSet resultSet = statement.executeQuery(sql);
 
         ArrayList<ReportTableRow> reportTableRows = new ArrayList<>();
-        int columnCounts = resultSet.getMetaData().getColumnCount();
+//        int columnCounts = resultSet.getMetaData().getColumnCount();
         while (resultSet.next()) {
             reportTableRows.add(
                 new ReportTableRow(

@@ -9,7 +9,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Drugs extends AbstractTable {
 
@@ -142,5 +144,14 @@ public class Drugs extends AbstractTable {
     @Override
     public String getTranslatedName() {
         return "Лекарства";
+    }
+
+    public Map<String, Integer> getDrugsMap() throws SQLException {
+        Map<String, Integer> map = new LinkedHashMap<>();
+        for (AbstractTableRow row : getAllRows()) {
+            DrugsRow drugsRow = (DrugsRow) row;
+            map.put(drugsRow.getName(), drugsRow.getId());
+        }
+        return map;
     }
 }

@@ -9,6 +9,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -21,7 +22,7 @@ public class Report3Panel extends JPanel implements Runnable {
     private final DataBase dataBase;
     private final SideWindow reportWindow;
 
-    private HashMap<String, Integer> indexes;
+    private HashMap<String, Integer> possibleReleaseFormsMap;
 
     public Report3Panel(SideWindow reportWindow, DataBase dataBase) {
         this.dataBase = dataBase;
@@ -37,28 +38,22 @@ public class Report3Panel extends JPanel implements Runnable {
         gbc.insets = new Insets(8, 8, 8, 8);
 
         ////////////////////////////// дальше scare
-        JLabel info = new JLabel("Выберете параметр запроса");
+        JLabel info = new JLabel("Выберете тип вещества");
         this.add(info, gbc);
-
-        gbc.gridy++;
 
         ReportTable3 reportTable3 = new ReportTable3("Отчет 3",
             dataBase);
-        var possibleQueryParams = reportTable3.getPossibleQueryParameters();
 
-        indexes = new HashMap<>();
-        String[] params = new String[possibleQueryParams.size() + 1];
-        params[0] = "Любой";
-        indexes.put(params[0], null);
-        for (int i = 1; i <= possibleQueryParams.size(); i++) {
-            params[i] = possibleQueryParams.get(i - 1).first();
+        possibleReleaseFormsMap = new LinkedHashMap<>();
+        possibleReleaseFormsMap.put("Любой", null);
+        possibleReleaseFormsMap.putAll(reportTable3.getPossibleReleaseForms());
 
-            indexes.put(possibleQueryParams.get(i - 1).first(),
-                (Integer) possibleQueryParams.get(i - 1).second());
-        }
-        JComboBox<String> possibleBox = new JComboBox<>(params);
+        gbc.gridy++;
+        JComboBox<String> possibleBox = new JComboBox<>(
+            possibleReleaseFormsMap.keySet().toArray(new String[0]));
         possibleBox.addActionListener(e -> {
-            reportTable3.setQueryParam(indexes.get((String) possibleBox.getSelectedItem()));
+            reportTable3.setQueryParam(
+                possibleReleaseFormsMap.get((String) possibleBox.getSelectedItem()));
         });
         this.add(possibleBox, gbc);
         ///////////////////////////

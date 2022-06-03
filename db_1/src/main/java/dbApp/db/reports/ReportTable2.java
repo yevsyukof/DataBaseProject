@@ -1,7 +1,7 @@
 package dbApp.db.reports;
 
 import dbApp.db.DataBase;
-import dbApp.utils.Pair;
+import dbApp.db.entities.AbstractTableRow;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,41 +15,35 @@ import lombok.Setter;
 public class ReportTable2 extends ReportTable {
 
     @Setter
-    private Integer queryParam = null;
+    private Integer releaseFrom = null;
 
     public ReportTable2(String tableName, DataBase dataBase) {
         super(tableName, dataBase);
 
         setTranslatedColumnsNames(dataBase.getClientsTable().getTranslatedColumnsNames());
         translatedColumnsNames.remove("id");
-        setColumnsNames(dataBase.getClientsTable().getColumnsNames());
-        columnsNames.remove("id");
+
+//        setColumnsNames(dataBase.getClientsTable().getColumnsNames());
+//        columnsNames.remove("id");
     }
 
+    public Map<String, Integer> getPossibleReleaseForms() throws SQLException {
+        List<AbstractTableRow> rows = dataBase.getReleaseForms().getAllRows();
 
-    @Override
-    public List<String> getPossibleQueryParameters() throws SQLException {
-        String sql = """
-            SELECT * FROM release_forms
-            """;
-
-        Statement statement = dataBase.getDbService().getDbConnection().createStatement();
-        ResultSet resultSet = statement.executeQuery(sql);
-
-        List<String> possibleParameters = new ArrayList<>();
-        while (resultSet.next()) {
-            possibleParameters.add(resultSet.getString(2));
+        Map<String, Integer> possibleReleaseForms = new LinkedHashMap<>();
+        for (AbstractTableRow row : rows) {
+            possibleReleaseForms.put(
+                String.valueOf(row.getField(1)),
+                (Integer) row.getField(0));
         }
-
-        statement.close();
-        return possibleParameters;
+        return possibleReleaseForms;
     }
 
     @Override
     public List<ReportTableRow> getReportRows() throws SQLException {
         ResultSet resultSet;
 
-        if (queryParam == null) {
+        if (releaseFrom == null) {
             String sql = """
             SELECT DISTINCT
                 first_name, last_name, address, phone_number
@@ -62,19 +56,21 @@ public class ReportTable2 extends ReportTable {
             resultSet = statement.executeQuery(sql);
         } else {
             String sql = """
-            SELECT DISTINCT
-                first_name, last_name, address, phone_number
-            FROM order_to_drugs otd
-            JOIN order_to_missing_drugs otmd ON otd.drug_id = otmd.drug_id
-            JOIN drugs d on otmd.drug_id = d.id
-            JOIN orders o on o.id = otd.order_id
-            JOIN clients c on c.id = o.client_id
-            WHERE release_form_id = ?
+                SELECT DISTINCT
+                    first_name, last_name, address, phone_number
+                FROM order_to_missing_drugs otmd
+                JOIN drug_to_component dtc on otmd.drug_id = dtc.drug_id
+                JOIN drugs d on dtc.component_id = d.id
+                JOIN release_forms rf on d.release_form_id = rf.id
+                JOIN orders o on otmd.order_id = o.id
+                JOIN clients c on c.id = o.client_id
+                WHERE release_form_id = ?
                 """;
 
             PreparedStatement preparedStatement = dataBase.getDbService().getDbConnection()
                 .prepareStatement(sql);
-            preparedStatement.setInt(1, queryParam);
+
+            preparedStatement.setInt(1, releaseFrom);
             resultSet = preparedStatement.executeQuery();
         }
 

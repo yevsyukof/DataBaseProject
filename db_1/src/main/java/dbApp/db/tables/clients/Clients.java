@@ -142,4 +142,22 @@ public class Clients extends AbstractTable {
     public String getTranslatedName() {
         return "Клиенты";
     }
+
+    public Integer findClientByPhoneNumber(String phoneNumber) throws SQLException {
+        Integer clientId = null;
+
+        String sql = """
+            SELECT id FROM clients
+            WHERE phone_number = ?
+            """;
+        PreparedStatement ps = dbService.getDbConnection().prepareStatement(sql);
+        ps.setString(1, phoneNumber);
+
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            clientId = rs.getInt("id");
+        }
+        ps.close();
+        return clientId;
+    }
 }

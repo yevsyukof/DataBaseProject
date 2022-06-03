@@ -9,7 +9,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Map.Entry;
+import java.util.LinkedHashMap;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -22,7 +22,7 @@ public class Report2Panel extends JPanel implements Runnable {
     private final DataBase dataBase;
     private final SideWindow reportWindow;
 
-    private HashMap<String, Integer> indexes;
+    private HashMap<String, Integer> possibleReleaseFormsMap;
 
     public Report2Panel(SideWindow reportWindow, DataBase dataBase) {
         this.dataBase = dataBase;
@@ -37,35 +37,23 @@ public class Report2Panel extends JPanel implements Runnable {
         gbc.gridy = 0;
         gbc.insets = new Insets(8, 8, 8, 8);
 
-        JLabel queryName = new JLabel("Клиенты, ждущие поставок лекарств");
+        JLabel queryName = new JLabel("Выберите тип лекарства");
         this.add(queryName, gbc);
 
         ////////////////////////////// дальше scare
-        gbc.gridy++;
         ReportTable2 reportTable2 = new ReportTable2("Клиенты, ждущие поставок лекарств",
             dataBase);
 
-        var possibleQueryParams = reportTable2.getPossibleQueryParameters();
+        possibleReleaseFormsMap = new LinkedHashMap<>();
+        possibleReleaseFormsMap.put("Любой", null);
+        possibleReleaseFormsMap.putAll(reportTable2.getPossibleReleaseForms());
 
-        indexes = new HashMap<>();
-        String[] params = new String[possibleQueryParams.size() + 1];
-        params[0] = "Любой";
-        indexes.put(params[0], null);
-
-        int i = 1;
-        for (Entry<String, Object> param : possibleQueryParams.entrySet()) {
-            params[i] = param.getKey();
-        }
-
-        for (int i = 1; i <= possibleQueryParams.size(); i++) {
-            params[i] = possibleQueryParams.get(i - 1).first();
-
-            indexes.put(possibleQueryParams.get(i - 1).first(),
-                (Integer) possibleQueryParams.get(i - 1).second());
-        }
-        JComboBox<String> possibleBox = new JComboBox<>(params);
+        gbc.gridy++;
+        JComboBox<String> possibleBox = new JComboBox<>(
+            possibleReleaseFormsMap.keySet().toArray(new String[0]));
         possibleBox.addActionListener(e -> {
-            reportTable2.setQueryParam(indexes.get((String) possibleBox.getSelectedItem()));
+            reportTable2.setReleaseFrom(
+                    possibleReleaseFormsMap.get((String) possibleBox.getSelectedItem()));
         });
         this.add(possibleBox, gbc);
         ///////////////////////////

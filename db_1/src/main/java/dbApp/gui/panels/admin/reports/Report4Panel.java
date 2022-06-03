@@ -9,6 +9,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -20,13 +21,12 @@ public class Report4Panel extends JPanel implements Runnable {
 
     private final SideWindow reportWindow;
 
-    private HashMap<String, Integer> indexes;
+    private HashMap<String, Integer> possibleReleaseFormsMap;
 
     private final ReportTable4 reportTable4;
 
     public Report4Panel(SideWindow reportWindow, DataBase dataBase) {
         this.reportWindow = reportWindow;
-
         reportTable4 = new ReportTable4("Отчет 4", dataBase);
     }
 
@@ -41,24 +41,17 @@ public class Report4Panel extends JPanel implements Runnable {
         ////////////////////////////// дальше scare
         JLabel info = new JLabel("Выберете тип вещества");
         this.add(info, gbc);
+
+        possibleReleaseFormsMap = new LinkedHashMap<>();
+        possibleReleaseFormsMap.put("Любой", null);
+        possibleReleaseFormsMap.putAll(reportTable4.getPossibleReleaseForms());
+
         gbc.gridy++;
-
-        var possibleQueryParams = reportTable4.getPossibleQueryParameters();
-
-        indexes = new HashMap<>();
-        String[] params = new String[possibleQueryParams.size() + 1];
-        params[0] = "Любой";
-        indexes.put(params[0], null);
-        for (int i = 1; i <= possibleQueryParams.size(); i++) {
-            params[i] = possibleQueryParams.get(i - 1).first();
-
-            indexes.put(possibleQueryParams.get(i - 1).first(),
-                (Integer) possibleQueryParams.get(i - 1).second());
-        }
-
-        JComboBox<String> possibleBox = new JComboBox<>(params);
+        JComboBox<String> possibleBox = new JComboBox<>(
+            possibleReleaseFormsMap.keySet().toArray(new String[0]));
         possibleBox.addActionListener(e -> {
-            reportTable4.setRequiredReleaseFormId(indexes.get((String) possibleBox.getSelectedItem()));
+            reportTable4.setRequiredReleaseFormId(
+                possibleReleaseFormsMap.get((String) possibleBox.getSelectedItem()));
         });
         this.add(possibleBox, gbc);
         ///////////////////////////

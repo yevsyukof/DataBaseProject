@@ -46,7 +46,5 @@ public abstract class ReportTable {
         return tableName;
     }
 
-    public abstract List<String> getPossibleQueryParameters() throws SQLException;
-
     public abstract List<ReportTableRow> getReportRows() throws SQLException;
 }

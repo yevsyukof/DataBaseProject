@@ -35,10 +35,17 @@ public class OrdersRow extends AbstractTableRow {
         try {
             this.id = Long.valueOf(newFieldsValues.get(0));
             this.clientId = Integer.valueOf(newFieldsValues.get(1));
-            this.orderDate = Date.valueOf(newFieldsValues.get(2));
-            this.readyDate = Date.valueOf(newFieldsValues.get(3));
-            this.issueDate = Date.valueOf(newFieldsValues.get(4));
+            this.orderDate = !newFieldsValues.get(2).isEmpty()
+                ? Date.valueOf(newFieldsValues.get(2))
+                : null;
+            this.readyDate = !newFieldsValues.get(3).isEmpty()
+                ? Date.valueOf(newFieldsValues.get(3))
+                : null;
+            this.issueDate = !newFieldsValues.get(4).isEmpty()
+                ? Date.valueOf(newFieldsValues.get(4))
+                : null;
         } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
+            System.err.println("Error: OrdersRow");
             throw new SQLException(e.getMessage());
         }
         loadFieldsValues();
@@ -61,6 +68,6 @@ public class OrdersRow extends AbstractTableRow {
 
     @Override
     public AbstractPrimaryKey getPrimaryKeyValue() {
-        return new DrugManufacturersRowPrimaryKey(new Object[]{id});
+        return new OrdersRowPrimaryKey(new Object[]{id});
     }
 }

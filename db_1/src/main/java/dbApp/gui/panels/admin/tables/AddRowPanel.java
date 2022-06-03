@@ -2,6 +2,7 @@ package dbApp.gui.panels.admin.tables;
 
 import dbApp.gui.SideWindow;
 import dbApp.db.entities.AbstractTable;
+import java.awt.event.WindowEvent;
 import java.sql.SQLException;
 import javax.swing.*;
 import java.awt.*;
@@ -71,7 +72,12 @@ public class AddRowPanel extends JPanel {
                 table.addRow(fieldsValues);
                 infoLabel.setText("Данные добавлены");
 
-                viewTablePanel.run();
+                if (viewTablePanel != null) {
+                    viewTablePanel.run();
+                } else {
+                    addRowWindow.dispatchEvent(
+                        new WindowEvent(addRowWindow, WindowEvent.WINDOW_CLOSING));
+                }
             } catch (SQLException ex) {
                 infoLabel.setForeground(Color.RED);
                 infoLabel.setText(ex.getMessage());

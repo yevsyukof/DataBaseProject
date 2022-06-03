@@ -4,12 +4,15 @@ import dbApp.db.DataBase.DBService;
 import dbApp.db.entities.AbstractPrimaryKey;
 import dbApp.db.entities.AbstractTable;
 import dbApp.db.entities.AbstractTableRow;
+import dbApp.db.tables.drug_manufacturers.DrugManufacturersRow;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ReleaseForms extends AbstractTable {
 
@@ -116,5 +119,15 @@ public class ReleaseForms extends AbstractTable {
     @Override
     public String getTranslatedName() {
         return "Формы выпуска лекарств";
+    }
+
+    public Map<String, Integer> getReleaseFormsMap() throws SQLException {
+        Map<String, Integer> map = new LinkedHashMap<>();
+        for (AbstractTableRow row : getAllRows()) {
+            ReleaseFormsRow releaseFormsRow = (ReleaseFormsRow) row;
+            map.put(releaseFormsRow.getDrugType(),
+                releaseFormsRow.getId());
+        }
+        return map;
     }
 }

@@ -66,7 +66,7 @@ public class Orders extends AbstractTable {
         PreparedStatement preparedStatement
             = dbService.getDbConnection().prepareStatement(sql);
 
-        preparedStatement.setInt(1,
+        preparedStatement.setLong(1,
             ((OrdersRowPrimaryKey) primaryKeyValue).getId());
 
         preparedStatement.execute();

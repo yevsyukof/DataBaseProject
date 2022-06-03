@@ -4,12 +4,15 @@ import dbApp.db.DataBase.DBService;
 import dbApp.db.entities.AbstractPrimaryKey;
 import dbApp.db.entities.AbstractTable;
 import dbApp.db.entities.AbstractTableRow;
+import dbApp.db.tables.drugs.DrugsRow;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DrugManufacturers extends AbstractTable {
 
@@ -112,5 +115,15 @@ public class DrugManufacturers extends AbstractTable {
     @Override
     public String getTranslatedName() {
         return "Производители лекарств";
+    }
+
+    public Map<String, Integer> getDrugManufacturersMap() throws SQLException {
+        Map<String, Integer> map = new LinkedHashMap<>();
+        for (AbstractTableRow row : getAllRows()) {
+            DrugManufacturersRow drugManufacturersRow = (DrugManufacturersRow) row;
+            map.put(drugManufacturersRow.getName(),
+                drugManufacturersRow.getId());
+        }
+        return map;
     }
 }

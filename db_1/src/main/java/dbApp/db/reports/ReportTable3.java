@@ -1,7 +1,7 @@
 package dbApp.db.reports;
 
 import dbApp.db.DataBase;
-import dbApp.utils.Pair;
+import dbApp.db.entities.AbstractTableRow;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,23 +23,16 @@ public class ReportTable3 extends ReportTable {
         setTranslatedColumnsNames(List.of(new String[]{"Название лекарства", "статистика исп."}));
     }
 
-    @Override
-    public Map<String, Object> getPossibleQueryParameters() throws SQLException {
-        String sql = """
-            SELECT * FROM release_forms
-            """;
+    public Map<String, Integer> getPossibleReleaseForms() throws SQLException {
+        List<AbstractTableRow> rows = dataBase.getReleaseForms().getAllRows();
 
-        Statement statement = dataBase.getDbService().getDbConnection().createStatement();
-        ResultSet resultSet = statement.executeQuery(sql);
-
-        Map<String, Object> possibleParameters = new LinkedHashMap<>();
-        while (resultSet.next()) {
-            possibleParameters.put(
-                resultSet.getString(2), resultSet.getInt(1));
+        Map<String, Integer> possibleReleaseForms = new LinkedHashMap<>();
+        for (AbstractTableRow row : rows) {
+            possibleReleaseForms.put(
+                String.valueOf(row.getField(1)),
+                (Integer) row.getField(0));
         }
-
-        statement.close();
-        return possibleParameters;
+        return possibleReleaseForms;
     }
 
     @Override

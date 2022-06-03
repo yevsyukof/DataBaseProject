@@ -8,7 +8,7 @@ public class OrdersRowPrimaryKey extends AbstractPrimaryKey {
         super(keyComponents);
     }
 
-    public int getId() {
-        return (int) keyComponents[0];
+    public long getId() {
+        return (long) keyComponents[0];
     }
 }
