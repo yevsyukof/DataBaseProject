@@ -1,17 +1,21 @@
 package dbApp.db.actions;
 
 import dbApp.db.DataBase;
+import dbApp.utils.Pair;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import lombok.Setter;
 
 public class AddDrugAction {
 
     private final DataBase dataBase;
 
-    private final Set<Integer> drugComponentsIds;
+    // <component_id, volume>
+    @Setter
+    private List<Pair<Integer, Integer>> drugComponents;
 
     @Setter
     private Integer releaseFormId = null;
@@ -30,7 +34,6 @@ public class AddDrugAction {
 
     public AddDrugAction(DataBase dataBase) {
         this.dataBase = dataBase;
-        drugComponentsIds = new LinkedHashSet<>();
     }
 
     public Map<String, Integer> getPossibleComponentsMap() throws SQLException {
@@ -45,13 +48,39 @@ public class AddDrugAction {
         return dataBase.getReleaseForms().getReleaseFormsMap();
     }
 
-    public void addComponent(Integer componentId) {
-        drugComponentsIds.add(componentId);
-    }
-
     public void addDrugIntoBase() throws SQLException {
-        if (drugComponentsIds.isEmpty()) {
+        if (drugComponents.isEmpty()) {
             throw new SQLException("Не указаны компоненты лекарства");
         }
+
+        try {
+            /// Начало транзакции
+            dataBase.getDbService().getDbConnection().setAutoCommit(false);
+            {
+                ArrayList<Object> args = new ArrayList<>();
+                args.add(drugName);
+                args.add(releaseFormId);
+                args.add(drugManufacturerId);
+                args.add(criticalRate);
+                args.add(price);
+
+                Integer newDrugId = dataBase.getDrugs().addNewDrugIntoBase(args);
+
+                for (Pair<Integer, Integer> drugComponent : drugComponents) {
+                    dataBase.getDrugToComponent()
+                        .addDrugComponentIntoBase (new Integer[] {
+                            newDrugId,
+                            drugComponent.first(),
+                            drugComponent.second()
+                        });
+                }
+            }
+            // Конец транзакции
+            dataBase.getDbService().getDbConnection().commit();
+        } catch (SQLException e) {
+            dataBase.getDbService().getDbConnection().setAutoCommit(true);
+            throw new SQLException(e.getMessage());
+        }
+        dataBase.getDbService().getDbConnection().setAutoCommit(true);
     }
 }

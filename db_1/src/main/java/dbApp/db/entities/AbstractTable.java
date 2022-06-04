@@ -51,11 +51,6 @@ public abstract class AbstractTable {
         return translatedColumnsNames.stream().toList();
     }
 
-    public int getColumIndex(String columnName) {
-//        return columnsIndexes.get(columnName);
-        return -1; // TODO
-    }
-
     public String getName() {
         return tableName;
     }

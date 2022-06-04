@@ -154,4 +154,38 @@ public class Drugs extends AbstractTable {
         }
         return map;
     }
+
+    public Integer addNewDrugIntoBase(List<Object> args) throws SQLException {
+        String sql = """
+            INSERT INTO drugs
+                (name, release_form_id, drug_manufacturer_id, inventory_volume, critical_rate, price)
+            VALUES
+                (?, ?, ?, 0, ?, ?)
+            RETURNING id
+                """;
+
+        PreparedStatement preparedStatement = dbService.getDbConnection().prepareStatement(sql);
+
+        try {
+            preparedStatement.setObject(1, args.get(0));
+            preparedStatement.setObject(2, args.get(1));
+            preparedStatement.setObject(3, args.get(2));
+            preparedStatement.setObject(4, args.get(3));
+            preparedStatement.setObject(5, args.get(4));
+        } catch (IllegalArgumentException e) {
+            throw new SQLException(e.getMessage());
+        }
+
+        ResultSet resultSet = preparedStatement.executeQuery();
+        Integer returnedId;
+        if (resultSet.next()) {
+            returnedId = resultSet.getInt(1);
+        } else {
+            preparedStatement.close();
+            throw new SQLException("ID не вернулся");
+        }
+
+        preparedStatement.close();
+        return returnedId;
+    }
 }

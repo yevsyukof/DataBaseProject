@@ -4,6 +4,7 @@ import dbApp.db.DataBase;
 import dbApp.db.actions.AddDrugAction;
 import dbApp.gui.SideWindow;
 import dbApp.gui.panels.BorderPanel;
+import dbApp.utils.Pair;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -11,9 +12,12 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.WindowEvent;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -28,7 +32,7 @@ public class AddDrugActionPanel extends JPanel {
     private final Map<String, Integer> possibleManufacturers;
     private final Map<String, Integer> possibleReleaseForms;
 
-    private final Map<JComboBox<String>, JTextField> requiredComponentVolume
+    private final Map<JComboBox<String>, JTextField> requiredComponentVolumeMap
         = new LinkedHashMap<>();
 
 
@@ -99,7 +103,7 @@ public class AddDrugActionPanel extends JPanel {
             possibleManufacturers.keySet().toArray(new String[0]));
         manufacturerBox.addActionListener(actionEvent -> {
             addDrugAction.setDrugManufacturerId(
-                possibleReleaseForms.get((String) manufacturerBox.getSelectedItem()));
+                possibleManufacturers.get((String) manufacturerBox.getSelectedItem()));
         });
         centre.add(manufacturerBox, gbc);
 
@@ -120,24 +124,15 @@ public class AddDrugActionPanel extends JPanel {
 
         gbc.gridy++;
         gbc.gridx = 0;
-        centre.add(new JLabel("Выберете компоненты"), gbc);
-
-        gbc.gridx++;
-        JComboBox<String> component1Box = new JComboBox<>(
+        JComboBox<String> possibleComponent1Box = new JComboBox<>(
             possibleComponents.keySet().toArray(new String[0]));
-        component1Box.addActionListener(actionEvent -> {
-            addDrugAction.addComponent(
-                possibleReleaseForms.get((String) component1Box.getSelectedItem()));
-        });
-        centre.add(component1Box, gbc);
-
-        component1Box.get
-
+        centre.add(possibleComponent1Box, gbc);
         gbc.gridx++;
-        centre.add(new JLabel("Требуемое колво"));
+        centre.add(new JLabel("Требуемое кол-во:"), gbc);
         gbc.gridx++;
-//        J
-//        requiredComponentVolume.put()
+        JTextField requiredVolumeTextField1 = new JTextField(10);
+        centre.add(requiredVolumeTextField1, gbc);
+        requiredComponentVolumeMap.put(possibleComponent1Box, requiredVolumeTextField1);
     }
 
     private void initSouthBorder(BorderPanel southBorder,
@@ -149,18 +144,15 @@ public class AddDrugActionPanel extends JPanel {
         addNewComponentButton.addActionListener(e -> {
             gbc.gridy++;
             gbc.gridx = 0;
-
-            JLabel chooseComponentNameLabel = new JLabel("Выберите компонент: ");
-            centre.add(chooseComponentNameLabel, gbc);
-
-            gbc.gridx++;
-            JComboBox<String> possibleComponentBox = new JComboBox<>(
+            JComboBox<String> newPossibleComponentBox = new JComboBox<>(
                 possibleComponents.keySet().toArray(new String[0]));
-            possibleComponentBox.addActionListener(actionEvent -> {
-                addDrugAction.addComponent(
-                    possibleComponents.get((String) possibleComponentBox.getSelectedItem()));
-            });
-            centre.add(possibleComponentBox, gbc);
+            centre.add(newPossibleComponentBox, gbc);
+            gbc.gridx++;
+            centre.add(new JLabel("Требуемое кол-во:"), gbc);
+            gbc.gridx++;
+            JTextField requiredVolumeTextField = new JTextField(10);
+            centre.add(requiredVolumeTextField, gbc);
+            requiredComponentVolumeMap.put(newPossibleComponentBox, requiredVolumeTextField);
 
             addRowWindow.revalidate(); /// TODO: ВАЖНАЯ ШТУКЕНЦИЯ
         });
@@ -174,12 +166,28 @@ public class AddDrugActionPanel extends JPanel {
             this.update(getGraphics());
 
             try {
+                ArrayList<Pair<Integer, Integer>> componentVolumeList = new ArrayList<>();
+                for (Entry<JComboBox<String>, JTextField> entry :
+                                requiredComponentVolumeMap.entrySet()) {
+                    System.err.println((String)entry.getKey().getSelectedItem());
+
+                    componentVolumeList.add(
+                        new Pair<>(
+                            Integer.valueOf(
+                                possibleComponents.get((String)entry.getKey().getSelectedItem())),
+                            Integer.valueOf(entry.getValue().getText())));
+                }
+                addDrugAction.setDrugComponents(componentVolumeList);
+
                 addDrugAction.setDrugName(drugNameTextField.getText());
                 addDrugAction.setCriticalRate(Integer.valueOf(criticalRateTextField.getText()));
                 addDrugAction.setPrice(Integer.valueOf(priceTextField.getText()));
 
                 addDrugAction.addDrugIntoBase();
+
                 infoLabel.setText("Данные добавлены");
+                addRowWindow.dispatchEvent(
+                    new WindowEvent(addRowWindow, WindowEvent.WINDOW_CLOSING));
             } catch (SQLException | IllegalArgumentException ex) {
                 infoLabel.setForeground(Color.RED);
                 infoLabel.setText(ex.getMessage());

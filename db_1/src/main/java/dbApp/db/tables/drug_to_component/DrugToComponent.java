@@ -123,4 +123,26 @@ public class DrugToComponent extends AbstractTable {
     public String getTranslatedName() {
         return "Лекарство и его компоненты";
     }
+
+    public void addDrugComponentIntoBase(Integer[] args) throws SQLException {
+        String sql = """
+            INSERT INTO drug_to_component
+                (drug_id, component_id, required_volume)
+            VALUES
+                (?, ?, ?)
+                """;
+
+        PreparedStatement preparedStatement = dbService.getDbConnection().prepareStatement(sql);
+
+        try {
+            preparedStatement.setInt(1, args[0]);
+            preparedStatement.setInt(2, args[1]);
+            preparedStatement.setInt(3, args[2]);
+        } catch (IllegalArgumentException e) {
+            throw new SQLException("Введен невалидный аргумент: " + e.getLocalizedMessage());
+        }
+
+        preparedStatement.execute();
+        preparedStatement.close();
+    }
 }
